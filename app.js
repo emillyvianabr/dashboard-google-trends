@@ -54,20 +54,25 @@ function updateKPIs(){
   const rows2026 = D.series[c].filter(r => r.date.startsWith('2026'));
   const b = curr[0], cr = curr[1];
 
-  $('kBond').textContent = Math.round(b);
-  $('kCristo').textContent = Math.round(cr);
-  $('vBond').textContent = `${pct(curr[0], prev[0])} vs. mesmo período de 2025`;
-  $('vCristo').textContent = `${pct(curr[1], prev[1])} vs. mesmo período de 2025`;
-  $('vBond').style.color = curr[0] >= prev[0] ? '#23845a' : '#b94d3b';
-  $('vCristo').style.color = curr[1] >= prev[1] ? '#23845a' : '#b94d3b';
+  if($('kBond')){
+    $('kBond').textContent = Math.round(b);
+    $('kCristo').textContent = Math.round(cr);
+    $('vBond').textContent = `${pct(curr[0], prev[0])} vs. mesmo período de 2025`;
+    $('vCristo').textContent = `${pct(curr[1], prev[1])} vs. mesmo período de 2025`;
+    $('vBond').style.color = curr[0] >= prev[0] ? '#23845a' : '#b94d3b';
+    $('vCristo').style.color = curr[1] >= prev[1] ? '#23845a' : '#b94d3b';
 
-  const pb = peak(rows2026,'bondinho'), pc = peak(rows2026,'cristo');
-  $('pBond').textContent = pb.bondinho;
-  $('pdBond').textContent = pb.date ? fmtDate(pb.date) : '—';
-  $('pCristo').textContent = pc.cristo;
-  $('pdCristo').textContent = pc.date ? fmtDate(pc.date) : '—';
-  $('strength').textContent = cr ? `${Math.round(b/cr*100)}%` : '—';
-  $('overviewInsight').innerHTML = `Em <strong>${c}</strong>, no acumulado atual de 2026, o Bondinho representa aproximadamente <strong>${Math.round(b/cr*100)}%</strong> do interesse do Cristo. Os KPIs acima permanecem fixos no acumulado de 2026 e não mudam com os filtros de ano ou data.`;
+    const pb = peak(rows2026,'bondinho'), pc = peak(rows2026,'cristo');
+    $('pBond').textContent = pb.bondinho;
+    $('pdBond').textContent = pb.date ? fmtDate(pb.date) : '—';
+    $('pCristo').textContent = pc.cristo;
+    $('pdCristo').textContent = pc.date ? fmtDate(pc.date) : '—';
+    $('strength').textContent = cr ? `${Math.round(b/cr*100)}%` : '—';
+  }
+
+  if($('overviewInsight')){
+    $('overviewInsight').innerHTML = `Em <strong>${c}</strong>, no acumulado atual de 2026, o Bondinho representa aproximadamente <strong>${Math.round(b/cr*100)}%</strong> do interesse do Cristo. A primeira parte do painel aprofunda o comportamento do Bondinho; a segunda coloca esse desempenho em perspectiva frente ao Cristo.`;
+  }
 }
 
 function updateBondKpi(){
@@ -77,7 +82,7 @@ function updateBondKpi(){
   const y2026 = data['2026'] || [];
   const a2026 = avg(y2026);
   const a2025 = avgSamePeriod(y2025, y2026);
-  $('bondKpiLabel').textContent = `${c} • termo “Pão de Açúcar”`;
+  $('bondKpiCountry').textContent = c;
   $('bondAvgKpi').textContent = a2026 !== null ? a2026.toFixed(1) : '—';
   $('bondAvg2025').textContent = a2025 !== null ? a2025.toFixed(1) : '—';
   $('bondAvg2026').textContent = a2026 !== null ? a2026.toFixed(1) : '—';
