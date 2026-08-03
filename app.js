@@ -56,38 +56,56 @@ function timeline(){
 }
 function yoy(){
   const c=$('country').value;
-  const topic=$('yoyTopic')?.value||'Bondinho';
-  const rows=D.series[c];
-  const byMonth={2025:{},2026:{}};
-  rows.forEach(r=>{
-    const [year,month]=String(r.date).split('-');
-    if((year==='2025'||year==='2026')&&month){
-      byMonth[year][Number(month)]={bondinho:Number(r.bondinho),cristo:Number(r.cristo)};
-    }
-  });
+  const topic=$('yoyTopic')?.value||'Ambos';
+  const rows=Array.isArray(D.series[c])?D.series[c]:[];
+  const months=['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
 
-  const months=Object.keys(byMonth[2026]).map(Number).sort((a,b)=>a-b).filter(m=>byMonth[2025][m]);
-  const labels=['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
-  const variation=(current,previous)=>previous===0?null:((current/previous)-1)*100;
-  const bondinho=months.map(m=>variation(byMonth[2026][m].bondinho,byMonth[2025][m].bondinho));
-  const cristo=months.map(m=>variation(byMonth[2026][m].cristo,byMonth[2025][m].cristo));
+  function monthly(year,key){
+    const values=Array(12).fill(null);
+    rows.forEach(row=>{
+      const parts=String(row.date||'').split('-');
+      const rowYear=Number(parts[0]);
+      const month=Number(parts[1])-1;
+      const value=Number(row[key]);
+      if(rowYear===year && month>=0 && month<12 && Number.isFinite(value)) values[month]=value;
+    });
+    return values;
+  }
 
   const traces=[];
+  const addTrace=(key,label,year,color,dash)=>{
+    traces.push({
+      x:months,
+      y:monthly(year,key),
+      name:`${label} ${year}`,
+      type:'scatter',
+      mode:'lines+markers',
+      connectgaps:false,
+      line:{color,width:3,dash},
+      marker:{color,size:7},
+      hovertemplate:`%{x}/${year}<br>${label}: %{y}<extra></extra>`
+    });
+  };
+
   if(topic==='Bondinho'||topic==='Ambos'){
-    traces.push({x:months.map(m=>labels[m-1]),y:bondinho,name:'Bondinho',mode:'lines+markers',line:{color:'#bc6b34',width:3},marker:{size:8},hovertemplate:'%{x}: %{y:.1f}%<extra>Bondinho</extra>'});
+    addTrace('bondinho','Bondinho',2025,'#bc6b34','dot');
+    addTrace('bondinho','Bondinho',2026,'#bc6b34','solid');
   }
   if(topic==='Cristo'||topic==='Ambos'){
-    traces.push({x:months.map(m=>labels[m-1]),y:cristo,name:'Cristo',mode:'lines+markers',line:{color:'#103f32',width:3},marker:{size:8},hovertemplate:'%{x}: %{y:.1f}%<extra>Cristo</extra>'});
+    addTrace('cristo','Cristo',2025,'#103f32','dot');
+    addTrace('cristo','Cristo',2026,'#103f32','solid');
   }
 
   Plotly.react('yoy',traces,{
     ...layoutBase,
-    xaxis:{gridcolor:'#edf1ee',categoryorder:'array',categoryarray:months.map(m=>labels[m-1])},
-    yaxis:{...layoutBase.yaxis,title:'Variação vs. mesmo mês de 2025 (%)',zeroline:true,zerolinecolor:'#8a9690',ticksuffix:'%',rangemode:'normal'},
-    shapes:[{type:'line',xref:'paper',x0:0,x1:1,y0:0,y1:0,line:{color:'#8a9690',width:1,dash:'dot'}}],
-    legend:{orientation:'h',y:1.12}
+    xaxis:{gridcolor:'#edf1ee',title:'',categoryorder:'array',categoryarray:months},
+    yaxis:{...layoutBase.yaxis,title:'Índice de interesse',rangemode:'tozero'},
+    legend:{orientation:'h',y:1.16,x:0},
+    margin:{...layoutBase.margin,t:52},
+    hovermode:'x unified'
   },cfg);
 }
+
 function season(){
   const c=$('country').value;
   const rows=Array.isArray(D.series[c])?D.series[c]:[];
