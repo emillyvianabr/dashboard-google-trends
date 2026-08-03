@@ -71,7 +71,7 @@ function updateKPIs(){
   }
 
   if($('overviewInsight')){
-    $('overviewInsight').innerHTML = `Em <strong>${c}</strong>, no acumulado atual de 2026, o Bondinho representa aproximadamente <strong>${Math.round(b/cr*100)}%</strong> do interesse do Cristo. A primeira parte do painel aprofunda o comportamento do Bondinho; a segunda coloca esse desempenho em perspectiva frente ao Cristo.`;
+    $('overviewInsight').innerHTML = `Em <strong>${c}</strong>, no acumulado atual de 2026, o Bondinho representa aproximadamente <strong>${Math.round(b/cr*100)}%</strong> do interesse do Cristo. Os gráficos abaixo ajudam a colocar esse desempenho em perspectiva frente ao principal comparativo.`;
   }
 }
 

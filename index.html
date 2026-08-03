@@ -29,17 +29,6 @@
     <button id="reset">Restaurar</button>
   </section>
 
-  <section class="intro card">
-    <div>
-      <span class="section-label">VISÃO GERAL</span>
-      <h2>Como o público referencia as duas atrações?</h2>
-      <p>O painel acompanha o interesse por <strong>Bondinho Pão de Açúcar</strong> e <strong>Cristo Redentor</strong>. A leitura busca entender se o público reconhece o produto “Bondinho”, se o associa ao destino “Pão de Açúcar” e como essa visibilidade se comporta frente ao principal concorrente.</p>
-    </div>
-    <div class="insight" id="overviewInsight"></div>
-  </section>
-
-  
-
   <section class="analysis-break">
     <span class="part-number">01</span>
     <div>
@@ -118,6 +107,24 @@
     </div>
   </section>
 
+  <section class="card brand">
+    <span class="section-label">REFERÊNCIA E ASSOCIAÇÃO DE MARCA</span>
+    <h2>Como as pessoas procuram o Bondinho</h2>
+    <p>A lista abaixo organiza, por país, as principais formas de referência ligadas ao Bondinho e ao universo de busca associado ao atrativo. Ela pode ser substituída pelas exportações de “consultas relacionadas” do Google Trends assim que esses arquivos forem adicionados.</p>
+    <div class="brand-grid">
+      <div>
+        <h3>Termos associados</h3>
+        <div id="termList" class="chips"></div>
+        <h3>Pesquisas relacionadas em alta</h3>
+        <div id="relatedTable" class="related"></div>
+      </div>
+      <div>
+        <h3>Nuvem de palavras</h3>
+        <canvas id="wordcloud"></canvas>
+      </div>
+    </div>
+  </section>
+
   <section class="analysis-break comparison">
     <span class="part-number">02</span>
     <div>
@@ -125,6 +132,15 @@
       <h2>Como o Bondinho se comporta frente ao Cristo?</h2>
       <p>Depois da leitura individual, comparamos a trajetória das duas atrações para separar movimentos próprios do Bondinho de tendências compartilhadas.</p>
     </div>
+  </section>
+
+  <section class="intro card">
+    <div>
+      <span class="section-label">VISÃO GERAL</span>
+      <h2>Como o público referencia as duas atrações?</h2>
+      <p>O painel acompanha o interesse por <strong>Bondinho Pão de Açúcar</strong> e <strong>Cristo Redentor</strong>. A leitura busca entender se o público reconhece o produto “Bondinho”, se o associa ao destino “Pão de Açúcar” e como essa visibilidade se comporta frente ao principal concorrente.</p>
+    </div>
+    <div class="insight" id="overviewInsight"></div>
   </section>
 
   <section class="grid two">
@@ -151,23 +167,7 @@
     </article>
   </section>
 
-  <section class="card brand">
-    <span class="section-label">REFERÊNCIA E ASSOCIAÇÃO DE MARCA</span>
-    <h2>Como as pessoas procuram as atrações</h2>
-    <p>A lista abaixo organiza formas de referência por país. Ela pode ser substituída pelas exportações de “consultas relacionadas” do Google Trends assim que esses arquivos forem adicionados.</p>
-    <div class="brand-grid">
-      <div>
-        <h3>Termos associados</h3>
-        <div id="termList" class="chips"></div>
-        <h3>Pesquisas relacionadas em alta</h3>
-        <div id="relatedTable" class="related"></div>
-      </div>
-      <div>
-        <h3>Nuvem de palavras</h3>
-        <canvas id="wordcloud"></canvas>
-      </div>
-    </div>
-  </section>
+
 
   <section class="method card">
     <span class="section-label">METODOLOGIA</span>
