@@ -1,11 +1,190 @@
-<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Google Trends - Análise de Interesse do Parque Bondinho</title><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@700;800&display=swap" rel="stylesheet"><link rel="stylesheet" href="./style.css"><script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/wordcloud2.js/1.2.2/wordcloud2.min.js"></script></head><body>
-<header><div><span class="eyebrow">INTELIGÊNCIA DE MERCADO</span><h1>Google Trends - Análise de Interesse do Parque Bondinho</h1><p>Parque Bondinho Pão de Açúcar × Cristo Redentor</p></div><div class="header-mark">🚠</div></header>
-<main><section class="filterbar"><label>País<select id="country"></select></label><label>Ano<select id="year"><option value="2026">2026</option><option value="2025">2025</option><option value="2024">2024</option><option value="2023">2023</option><option value="2022">2022</option><option value="2021">2021</option><option value="all">Todo o histórico</option></select></label><label>Data inicial<input type="date" id="start"></label><label>Data final<input type="date" id="end"></label><button id="reset">Restaurar</button></section>
-<section class="intro card"><div><span class="section-label">VISÃO GERAL</span><h2>Como o público referencia as duas atrações?</h2><p>O painel acompanha o interesse por <strong>Bondinho Pão de Açúcar</strong> e <strong>Cristo Redentor</strong>. A leitura busca entender se o público reconhece o produto “Bondinho”, se o associa ao destino “Pão de Açúcar” e como essa visibilidade se comporta frente ao principal concorrente.</p></div><div class="insight" id="overviewInsight"></div></section>
-<section class="kpis"><article class="kpi"><span>Interesse médio Bondinho</span><strong id="kBond">—</strong><small id="vBond">—</small></article><article class="kpi"><span>Interesse médio Cristo</span><strong id="kCristo">—</strong><small id="vCristo">—</small></article><article class="kpi"><span>Pico Bondinho</span><strong id="pBond">—</strong><small id="pdBond">—</small></article><article class="kpi"><span>Pico Cristo</span><strong id="pCristo">—</strong><small id="pdCristo">—</small></article><article class="kpi accent"><span>Força vs. Cristo</span><strong id="strength">—</strong><small>Bondinho ÷ Cristo</small></article></section>
-<section class="grid two"><article class="card"><div class="title"><div><span class="section-label">EVOLUÇÃO</span><h2>Interesse ao longo do tempo — Bondinho × Cristo</h2><p class="muted">A área sombreada destaca a diferença entre o interesse das duas atrações no período selecionado.</p></div></div><div id="timeline" class="chart"></div></article><article class="card"><div class="title"><div><span class="section-label">COMPARAÇÃO ANUAL</span><h2>Interesse mensal: 2025 × 2026</h2><p class="muted">Compara mês a mês o interesse de 2025 e 2026 no país selecionado. Linha pontilhada = 2025; linha contínua = 2026.</p></div><label class="chart-filter">Parque<select id="yoyTopic"><option value="Ambos">Ambos</option><option value="Bondinho">Bondinho</option><option value="Cristo">Cristo</option></select></label></div><div id="yoy" class="chart"></div></article></section>
-<section class="grid two"><article class="card"><span class="section-label">SAZONALIDADE</span><h2>Padrão médio mensal — 2021 a 2026</h2><p class="muted">Este gráfico ignora o filtro de ano e usa todo o histórico do país.</p><div id="season" class="chart"></div></article><article class="card"><span class="section-label">LEITURA</span><h2>Meses de maior interesse</h2><div id="seasonText" class="narrative"></div></article></section>
-<section class="card"><div class="title"><div><span class="section-label">DISTRIBUIÇÃO GEOGRÁFICA</span><h2>Onde as atrações têm maior interesse em 2026</h2></div><select id="mapTopic"><option>Bondinho</option><option>Cristo</option></select></div><div class="map-grid"><div id="map" class="chart map"></div><div><h3>Ranking de países</h3><div id="ranking" class="ranking"></div></div></div><p class="note">Os arquivos geográficos enviados contêm apenas 2026. Portanto, o mapa representa intensidade atual, não crescimento em relação a 2025.</p></section>
-<section class="card brand"><span class="section-label">REFERÊNCIA E ASSOCIAÇÃO DE MARCA</span><h2>Como as pessoas procuram as atrações</h2><p>A lista abaixo organiza formas de referência por país. Ela pode ser substituída pelas exportações de “consultas relacionadas” do Google Trends assim que esses arquivos forem adicionados.</p><div class="brand-grid"><div><h3>Termos associados</h3><div id="termList" class="chips"></div><h3>Pesquisas relacionadas em alta</h3><div id="relatedTable" class="related"></div></div><div><h3>Nuvem de palavras</h3><canvas id="wordcloud"></canvas></div></div></section>
-<section class="method card"><span class="section-label">METODOLOGIA</span><h2>Como o Google Trends atribui os valores</h2><p>O Google Trends não mostra o número absoluto de pesquisas. Ele transforma o interesse em uma escala relativa de <strong>0 a 100</strong> dentro do recorte selecionado de período, país e termos comparados.</p><div class="method-grid"><div><strong>100</strong><p>É o ponto de maior popularidade da consulta dentro daquela comparação.</p></div><div><strong>50</strong><p>Representa aproximadamente metade da popularidade observada no ponto máximo.</p></div><div><strong>0</strong><p>Não significa necessariamente ausência de buscas; pode indicar volume muito baixo ou dados insuficientes para aparecer na escala.</p></div></div><p>Por isso, os números devem ser lidos como <strong>interesse relativo</strong>, e não como quantidade de pessoas. Comparações entre países precisam ser interpretadas com cuidado, pois cada mercado pode ser normalizado separadamente. Os KPIs de 2025 e 2026 usam os valores consolidados informados para cada país; séries, picos e sazonalidade são calculados a partir dos CSVs mensais.</p></section></main><footer>Dashboard Google Trends • dados até julho de 2026</footer><div id="loadError" style="display:none;margin:16px auto;max-width:1180px;padding:14px;border-radius:10px;background:#fff0f0;color:#8a1f1f;font-family:DM Sans,sans-serif;font-weight:600">Os dados não foram carregados. Confirme que o arquivo dashboard-data.js está na mesma pasta do index.html.</div><script src="./dashboard-data.js?v=20260728d"></script>
-<script src="./app.js?v=20260803b"></script></body></html>
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Google Trends - Análise de Interesse do Parque Bondinho</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./style.css">
+  <script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/wordcloud2.js/1.2.2/wordcloud2.min.js"></script>
+</head>
+<body>
+<header>
+  <div>
+    <span class="eyebrow">INTELIGÊNCIA DE MERCADO</span>
+    <h1>Google Trends - Análise de Interesse do Parque Bondinho</h1>
+    <p>Parque Bondinho Pão de Açúcar × Cristo Redentor</p>
+  </div>
+  <div class="header-mark">🚠</div>
+</header>
+<main>
+  <section class="filterbar">
+    <label>País<select id="country"></select></label>
+    <label>Ano<select id="year"><option value="2026">2026</option><option value="2025">2025</option><option value="2024">2024</option><option value="2023">2023</option><option value="2022">2022</option><option value="2021">2021</option><option value="all">Todo o histórico</option></select></label>
+    <label>Data inicial<input type="date" id="start"></label>
+    <label>Data final<input type="date" id="end"></label>
+    <button id="reset">Restaurar</button>
+  </section>
+
+  <section class="intro card">
+    <div>
+      <span class="section-label">VISÃO GERAL</span>
+      <h2>Como o público referencia as duas atrações?</h2>
+      <p>O painel acompanha o interesse por <strong>Bondinho Pão de Açúcar</strong> e <strong>Cristo Redentor</strong>. A leitura busca entender se o público reconhece o produto “Bondinho”, se o associa ao destino “Pão de Açúcar” e como essa visibilidade se comporta frente ao principal concorrente.</p>
+    </div>
+    <div class="insight" id="overviewInsight"></div>
+  </section>
+
+  <section class="kpis">
+    <article class="kpi"><span>Interesse médio Bondinho</span><strong id="kBond">—</strong><small id="vBond">—</small></article>
+    <article class="kpi"><span>Interesse médio Cristo</span><strong id="kCristo">—</strong><small id="vCristo">—</small></article>
+    <article class="kpi"><span>Pico Bondinho</span><strong id="pBond">—</strong><small id="pdBond">—</small></article>
+    <article class="kpi"><span>Pico Cristo</span><strong id="pCristo">—</strong><small id="pdCristo">—</small></article>
+    <article class="kpi accent"><span>Força vs. Cristo</span><strong id="strength">—</strong><small>Bondinho ÷ Cristo</small></article>
+  </section>
+
+  <section class="analysis-break">
+    <span class="part-number">01</span>
+    <div>
+      <span class="section-label">ANÁLISE DO BONDINHO</span>
+      <h2>Como o interesse pelo Parque Bondinho evoluiu?</h2>
+      <p>Esta seção isola o comportamento do termo <strong>“Pão de Açúcar”</strong> para o país selecionado. Os componentes abaixo usam os arquivos mensais de 2025 e 2026 enviados por você.</p>
+    </div>
+  </section>
+
+  <section class="card bond-kpi-card">
+    <div class="title">
+      <div>
+        <span class="section-label">KPI PRINCIPAL</span>
+        <h2>Interesse médio do Bondinho</h2>
+        <p class="muted">Média mensal de janeiro a julho de 2026 no país selecionado, comparada ao mesmo período de 2025.</p>
+      </div>
+    </div>
+    <div class="bond-kpi-wrap">
+      <div class="bond-kpi-main">
+        <span id="bondKpiLabel">País selecionado</span>
+        <strong id="bondAvgKpi">—</strong>
+        <small id="bondAvgVar">—</small>
+      </div>
+      <div class="bond-kpi-side">
+        <div><span>Base 2025 (jan–jul)</span><strong id="bondAvg2025">—</strong></div>
+        <div><span>Base 2026 (jan–jul)</span><strong id="bondAvg2026">—</strong></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="card">
+    <div class="title">
+      <div>
+        <span class="section-label">EVOLUÇÃO ANUAL</span>
+        <h2>Bondinho — interesse mensal em 2025 × 2026</h2>
+        <p class="muted">Média mensal do índice do Google Trends para o termo “Pão de Açúcar”, no país selecionado. 2025 = linha pontilhada; 2026 = linha contínua. O gráfico ignora o filtro de ano, porque sua função já é comparar os dois anos.</p>
+      </div>
+    </div>
+    <div id="bondinhoYoy" class="chart"></div>
+  </section>
+
+  <section class="grid two">
+    <article class="card">
+      <span class="section-label">SAZONALIDADE</span>
+      <h2>Padrão mensal do Bondinho — 2025 e 2026</h2>
+      <p class="muted">Média mensal calculada com as observações disponíveis de 2025 e 2026 para o país selecionado.</p>
+      <div id="bondSeason" class="chart"></div>
+    </article>
+    <article class="card">
+      <span class="section-label">FORÇA ENTRE MERCADOS</span>
+      <h2>Em quais países acompanhados o tema é mais forte?</h2>
+      <p class="muted">Ranking pela média mensal de janeiro a julho de 2026 do termo “Pão de Açúcar”.</p>
+      <div id="bondCountryStrength" class="chart"></div>
+    </article>
+  </section>
+
+  <section class="card">
+    <div class="title">
+      <div>
+        <span class="section-label">MAPA DE CALOR</span>
+        <h2>Onde o interesse pelo Bondinho é mais forte além dos mercados acompanhados</h2>
+        <p class="muted">Mapa geográfico de calor com a intensidade atual do tema “Pão de Açúcar” em 2026, usando o arquivo geográfico enviado.</p>
+      </div>
+    </div>
+    <div class="map-grid">
+      <div id="bondMap" class="chart map"></div>
+      <div>
+        <h3>Ranking ampliado de países</h3>
+        <div id="bondMapRanking" class="ranking"></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="analysis-break comparison">
+    <span class="part-number">02</span>
+    <div>
+      <span class="section-label">COMPARAÇÃO</span>
+      <h2>Como o Bondinho se comporta frente ao Cristo?</h2>
+      <p>Depois da leitura individual, comparamos a trajetória das duas atrações para separar movimentos próprios do Bondinho de tendências compartilhadas.</p>
+    </div>
+  </section>
+
+  <section class="grid two">
+    <article class="card">
+      <div class="title">
+        <div>
+          <span class="section-label">EVOLUÇÃO</span>
+          <h2>Interesse ao longo do tempo — Bondinho × Cristo</h2>
+          <p class="muted">A área sombreada destaca a diferença entre o interesse das duas atrações no período selecionado.</p>
+        </div>
+      </div>
+      <div id="timeline" class="chart"></div>
+    </article>
+    <article class="card">
+      <div class="title">
+        <div>
+          <span class="section-label">COMPARAÇÃO ANUAL</span>
+          <h2>Bondinho × Cristo — 2025 × 2026</h2>
+          <p class="muted">Compara mês a mês o interesse de 2025 e 2026 no país selecionado. Use o filtro para exibir uma atração ou as duas.</p>
+        </div>
+        <label class="chart-filter">Parque<select id="yoyTopic"><option value="Ambos">Ambos</option><option value="Bondinho">Bondinho</option><option value="Cristo">Cristo</option></select></label>
+      </div>
+      <div id="yoy" class="chart"></div>
+    </article>
+  </section>
+
+  <section class="card brand">
+    <span class="section-label">REFERÊNCIA E ASSOCIAÇÃO DE MARCA</span>
+    <h2>Como as pessoas procuram as atrações</h2>
+    <p>A lista abaixo organiza formas de referência por país. Ela pode ser substituída pelas exportações de “consultas relacionadas” do Google Trends assim que esses arquivos forem adicionados.</p>
+    <div class="brand-grid">
+      <div>
+        <h3>Termos associados</h3>
+        <div id="termList" class="chips"></div>
+        <h3>Pesquisas relacionadas em alta</h3>
+        <div id="relatedTable" class="related"></div>
+      </div>
+      <div>
+        <h3>Nuvem de palavras</h3>
+        <canvas id="wordcloud"></canvas>
+      </div>
+    </div>
+  </section>
+
+  <section class="method card">
+    <span class="section-label">METODOLOGIA</span>
+    <h2>Como o Google Trends atribui os valores</h2>
+    <p>O Google Trends não mostra o número absoluto de pesquisas. Ele transforma o interesse em uma escala relativa de <strong>0 a 100</strong> dentro do recorte selecionado de período, país e termos comparados.</p>
+    <div class="method-grid">
+      <div><strong>100</strong><p>É o ponto de maior popularidade da consulta dentro daquela comparação.</p></div>
+      <div><strong>50</strong><p>Representa aproximadamente metade da popularidade observada no ponto máximo.</p></div>
+      <div><strong>0</strong><p>Não significa necessariamente ausência de buscas; pode indicar volume muito baixo ou dados insuficientes para aparecer na escala.</p></div>
+    </div>
+    <p>Por isso, os números devem ser lidos como <strong>interesse relativo</strong>, e não como quantidade de pessoas. Comparações entre países precisam ser interpretadas com cuidado, pois cada mercado pode ser normalizado separadamente. Os KPIs gerais de 2025 e 2026 usam os valores consolidados informados para cada país; a análise individual do Bondinho usa os arquivos semanais enviados para o termo “Pão de Açúcar”, convertidos em médias mensais. O KPI principal do Bondinho compara a média de <strong>jan–jul de 2026</strong> com a média do <strong>mesmo período de 2025</strong>. A sazonalidade do Bondinho usa somente 2025 e 2026.</p>
+  </section>
+</main>
+<footer>Dashboard Google Trends • dados até julho de 2026</footer>
+<div id="loadError" style="display:none;margin:16px auto;max-width:1180px;padding:14px;border-radius:10px;background:#fff0f0;color:#8a1f1f;font-family:DM Sans,sans-serif;font-weight:600">Os dados não foram carregados. Confirme que o arquivo dashboard-data.js está na mesma pasta do index.html.</div>
+<script src="./dashboard-data.js?v=20260803f"></script>
+<script src="./app.js?v=20260803f"></script>
+</body>
+</html>
