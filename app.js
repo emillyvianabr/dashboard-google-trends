@@ -1,5 +1,5 @@
 let D = window.TRENDS_DATA || {series:[],geo2026:[],term:'Pão de Açúcar',updated:null};
-const ORANGE = "#f37021", ORANGE2 = "#ffad78", DARK = "#c84d00", MUTED="#a8adb4", GREEN="#2e7d32", RED="#bf3b2b";
+const ORANGE = "#F47A2A", ORANGE2 = "#FDBA8C", DARK = "#C95B13", MUTED="#AAB0B7", GREEN="#23885A", RED="#C94A3A";
 const months = ["Jan","Fev","Mar","Abr","Mai","Jun","Jul","Ago","Set","Out","Nov","Dez"];
 let charts = {};
 
@@ -31,16 +31,16 @@ function setupFilters(){
 }
 
 Chart.defaults.font.family = 'Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif';
-Chart.defaults.color = "#747981";
+Chart.defaults.color = "#7B8490";
 
 function destroy(name){ if(charts[name]) charts[name].destroy(); }
 function standardOptions(horizontal=false){
   return {
     responsive:true, maintainAspectRatio:false,
-    plugins:{legend:{display:false},tooltip:{backgroundColor:"#27231f",padding:11,titleFont:{weight:"700"}}},
+    plugins:{legend:{display:false},tooltip:{backgroundColor:"#1D232A",padding:11,titleFont:{weight:"700"}}},
     scales:{
       x:{grid:{display:false},border:{display:false},ticks:{maxRotation:0,autoSkip:true}},
-      y:{grid:{color:"#f0ece8"},border:{display:false},beginAtZero:true}
+      y:{grid:{color:"#ECEEF0"},border:{display:false},beginAtZero:true}
     }
   };
 }
@@ -200,13 +200,13 @@ function makeBar(id,key,data,isPct=false){
     type:"bar",
     data:{labels:data.map(x=>x.name),datasets:[{data:data.map(x=>isPct?x.v*100:x.v),backgroundColor:isPct?barColors(data.map(x=>x.v)):ORANGE,borderRadius:7,borderSkipped:false}]},
     options:{...standardOptions(),indexAxis:data.length>=6?"y":"x",
-      plugins:{legend:{display:false},tooltip:{backgroundColor:"#27231f",callbacks:{label:(ctx)=>isPct?`${ctx.raw>=0?"+":""}${fmt(ctx.raw)}%`:fmt(ctx.raw)}}},
+      plugins:{legend:{display:false},tooltip:{backgroundColor:"#1D232A",callbacks:{label:(ctx)=>isPct?`${ctx.raw>=0?"+":""}${fmt(ctx.raw)}%`:fmt(ctx.raw)}}},
       scales:data.length>=6?{
-        x:{grid:{color:"#f0ece8"},border:{display:false},beginAtZero:true,ticks:{callback:v=>isPct?`${v}%`:v}},
+        x:{grid:{color:"#ECEEF0"},border:{display:false},beginAtZero:true,ticks:{callback:v=>isPct?`${v}%`:v}},
         y:{grid:{display:false},border:{display:false}}
       }:{
         x:{grid:{display:false},border:{display:false}},
-        y:{grid:{color:"#f0ece8"},border:{display:false},beginAtZero:true,ticks:{callback:v=>isPct?`${v}%`:v}}
+        y:{grid:{color:"#ECEEF0"},border:{display:false},beginAtZero:true,ticks:{callback:v=>isPct?`${v}%`:v}}
       }
     }
   });
@@ -236,7 +236,7 @@ function updateGeo(){
   charts.geo=new Chart(document.querySelector("#geoChart"),{
     type:"bar",
     data:{labels:data.map(x=>x.country),datasets:[{data:data.map(x=>x.value),backgroundColor:ORANGE,borderRadius:7,borderSkipped:false}]},
-    options:{...standardOptions(),indexAxis:"y",scales:{x:{grid:{color:"#f0ece8"},border:{display:false},beginAtZero:true},y:{grid:{display:false},border:{display:false}}}}
+    options:{...standardOptions(),indexAxis:"y",scales:{x:{grid:{color:"#ECEEF0"},border:{display:false},beginAtZero:true},y:{grid:{display:false},border:{display:false}}}}
   });
 }
 
