@@ -34,7 +34,8 @@ function setupFilters(){
 }
 
 Chart.defaults.font.family = 'Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif';
-Chart.defaults.color = "#7B8490";
+Chart.defaults.color = "#66707B";
+Chart.defaults.font.size = 12;
 
 function destroy(name){ if(charts[name]) charts[name].destroy(); }
 function standardOptions(horizontal=false){
@@ -196,15 +197,15 @@ function makeBar(id,key,data,isPct=false){
   destroy(key);
   charts[key]=new Chart(document.querySelector(id),{
     type:"bar",
-    data:{labels:data.map(x=>x.name),datasets:[{data:data.map(x=>isPct?x.v*100:x.v),backgroundColor:isPct?barColors(data.map(x=>x.v)):ORANGE,borderRadius:7,borderSkipped:false}]},
+    data:{labels:data.map(x=>x.name),datasets:[{data:data.map(x=>isPct?x.v*100:x.v),backgroundColor:isPct?barColors(data.map(x=>x.v)):ORANGE,borderRadius:7,borderSkipped:false,barThickness:data.length>=10?14:18,maxBarThickness:20}]},
     options:{...standardOptions(),indexAxis:data.length>=6?"y":"x",
       plugins:{legend:{display:false},tooltip:{backgroundColor:"#1D232A",callbacks:{label:(ctx)=>isPct?`${ctx.raw>=0?"+":""}${fmt(ctx.raw)}%`:fmt(ctx.raw)}}},
       scales:data.length>=6?{
-        x:{grid:{color:"#EEF0F2"},border:{display:false},beginAtZero:true,ticks:{callback:v=>isPct?`${v}%`:v}},
-        y:{grid:{display:false},border:{display:false}}
+        x:{grid:{color:"#EEF0F2"},border:{display:false},beginAtZero:true,ticks:{font:{size:11},padding:6,callback:v=>isPct?`${v}%`:v}},
+        y:{grid:{display:false},border:{display:false},ticks:{font:{size:11},padding:7}}
       }:{
-        x:{grid:{display:false},border:{display:false}},
-        y:{grid:{color:"#EEF0F2"},border:{display:false},beginAtZero:true,ticks:{callback:v=>isPct?`${v}%`:v}}
+        x:{grid:{display:false},border:{display:false},ticks:{font:{size:11},padding:7}},
+        y:{grid:{color:"#EEF0F2"},border:{display:false},beginAtZero:true,ticks:{font:{size:11},padding:6,callback:v=>isPct?`${v}%`:v}}
       }
     }
   });
