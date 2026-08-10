@@ -1,72 +1,90 @@
 # Dashboard Google Trends — Bondinho / Pão de Açúcar
 
-Dashboard estático preparado para GitHub Pages.
+Dashboard estático preparado para GitHub Pages, com atualização automática por planilha do próprio repositório.
 
-## Arquivos
-- `index.html` — página principal
-- `style.css` — identidade visual laranja e layout responsivo
-- `app.js` — filtros, KPIs, cálculos e gráficos
-- `data.js` — dados consolidados dos CSVs enviados
+## Estrutura do repositório
 
-## Como publicar no GitHub Pages
-1. Copie os quatro arquivos para a raiz do repositório (ou para uma pasta `/docs`).
-2. No GitHub, abra **Settings → Pages**.
-3. Em **Build and deployment**, escolha **Deploy from a branch**.
-4. Selecione a branch e a pasta onde os arquivos foram colocados.
-5. Salve.
+```text
+/
+├─ index.html
+├─ style.css
+├─ app.js
+├─ data.js              # fallback
+├─ README.md
+└─ data/
+   └─ dados.xlsx        # planilha que alimenta o dashboard
+```
 
-## Filtros
-- Mercado: global.
-- Ano: global.
-- Data inicial/final: exclusiva do gráfico “Interesse ao longo do tempo”. Quando usada, a janela de datas controla apenas esse gráfico.
+## Como atualizar os dados
 
-## Indicadores incluídos
-- Interesse médio
-- Variação YoY
-- Momentum (3 meses mais recentes vs. 3 anteriores)
-- Pico do período
-- Volatilidade
-- Tendência temporal
-- Comparação ano selecionado × ano anterior
-- Sazonalidade
-- Ranking de mercados
-- Crescimento anual por mercado
-- Momentum por mercado
-- Volatilidade por mercado
-- Maiores picos
-- Ranking geográfico 2026
-- Leitura automática
+Você **não precisa editar HTML, JavaScript ou gráficos**.
 
-## Nota metodológica
-Os CSVs enviados usam o termo **“Pão de Açúcar”**. O Google Trends usa índice relativo normalizado de 0 a 100, não volume absoluto de buscas.
+1. Atualize a planilha no seu computador.
+2. Garanta que a aba principal se chame `serie_mensal`.
+3. No GitHub, abra a pasta `data`.
+4. Substitua o arquivo `dados.xlsx` pelo novo arquivo.
+5. Mantenha exatamente o nome `dados.xlsx`.
+6. Depois que o GitHub Pages publicar a alteração, recarregue o dashboard.
 
+O navegador lê automaticamente `data/dados.xlsx` sempre que a página é aberta.
 
-## Metodologia no dashboard
-O dashboard inclui uma seção própria explicando:
-- a escolha do **tema “Pão de Açúcar”** para representar o atrativo;
-- a diferença entre **tema** e **termo de pesquisa** no Google Trends;
-- a normalização do índice de **0 a 100**;
-- como interpretar interesse médio, YoY, momentum, sazonalidade e volatilidade;
-- limitações da base e recomendação de cruzamento com PAX, vendas e outras fontes.
+## Formato mínimo da aba `serie_mensal`
 
+A planilha deve conter estas colunas:
 
-## Atualização por planilha
-O dashboard agora pode ser atualizado diretamente pela interface, sem editar os arquivos do site.
-
-1. Abra o dashboard.
-2. Clique em **Carregar planilha**.
-3. Escolha um arquivo `.xlsx`, `.xls` ou `.csv`.
-4. O dashboard recalcula filtros, KPIs e gráficos automaticamente no navegador.
-
-### Formato mínimo
-A planilha deve conter:
 - `data`
 - `mercado_codigo`
 - `mercado`
 - `indice_trends`
 
-A aba `serie_mensal` da planilha `base_google_trends_bondinho.xlsx` já está no formato correto.
+A planilha entregue junto com este pacote já está no formato correto.
 
-Em arquivos Excel, o dashboard procura primeiro uma aba chamada `serie_mensal`; se ela não existir, lê a primeira aba disponível.
+Também podem existir:
+- `ano`
+- `mes_num`
+- `mes`
+- `termo_google_trends`
 
-**Importante:** o arquivo é processado localmente no navegador. Para a nova base ficar permanente no GitHub Pages para todos os visitantes, ainda é necessário substituir o arquivo-base no repositório ou implementar armazenamento externo.
+## Fluxo recomendado
+
+Use sempre a mesma planilha como base. Quando trouxer novos dados do Google Trends:
+- acrescente as novas linhas na aba `serie_mensal`;
+- ou substitua as linhas anteriores pela série atualizada;
+- salve;
+- envie o novo `dados.xlsx` para a pasta `data` do repositório.
+
+Os filtros de mercado e ano são montados automaticamente com base no conteúdo do arquivo.
+
+## Upload manual
+
+O botão **Carregar planilha manualmente** continua disponível apenas para teste. Ele permite visualizar uma base no navegador antes de publicá-la no GitHub.
+
+Esse upload manual não altera o arquivo do repositório.
+
+## GitHub Pages
+
+Em **Settings → Pages**:
+1. escolha **Deploy from a branch**;
+2. selecione a branch usada pelo site;
+3. selecione a pasta raiz `/`;
+4. salve.
+
+## Observação importante sobre cache
+
+O código solicita `data/dados.xlsx` com cache desativado e um parâmetro de atualização na URL. Isso reduz o risco de o navegador continuar exibindo uma versão antiga da planilha depois de você substituí-la no GitHub.
+
+## Metodologia
+
+O dashboard usa o tema associado a **Pão de Açúcar** no Google Trends para representar o interesse pelo atrativo. Os valores do Trends são índices relativos normalizados de 0 a 100 e não correspondem a volume absoluto de buscas.
+
+O dashboard inclui:
+- interesse médio;
+- YoY;
+- momentum;
+- sazonalidade;
+- volatilidade;
+- picos;
+- comparação anual;
+- ranking de mercados;
+- ranking geográfico;
+- leitura automática.

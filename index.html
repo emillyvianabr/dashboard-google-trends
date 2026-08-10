@@ -34,20 +34,20 @@
       <button id="resetFilters" class="secondary-btn">Limpar filtros</button>
 
       <div class="upload-control">
-        <label for="fileUpload">Atualizar dados</label>
-        <label class="upload-btn" for="fileUpload">Carregar planilha</label>
+        <label for="fileUpload">Base de dados</label>
+        <label class="upload-btn" for="fileUpload">Carregar planilha manualmente</label>
         <input type="file" id="fileUpload" accept=".xlsx,.xls,.csv" hidden>
       </div>
-      <span id="uploadStatus" class="upload-status">Base incorporada</span>
+      <span id="uploadStatus" class="upload-status">Carregando data/dados.xlsx…</span>
 
       <div class="method-chip">Índice relativo 0–100 · não é volume absoluto</div>
     </section>
 
     <section class="upload-help">
       <div>
-        <strong>Atualização rápida:</strong>
-        carregue uma planilha com as colunas <code>data</code>, <code>mercado_codigo</code>, <code>mercado</code> e <code>indice_trends</code>.
-        Também aceito a aba <code>serie_mensal</code> da planilha-base que preparei.
+        <strong>Atualização pelo GitHub:</strong>
+        o dashboard lê automaticamente <code>data/dados.xlsx</code>. Para atualizar, substitua esse arquivo no repositório mantendo o mesmo nome e a mesma estrutura.
+        O botão de upload manual fica apenas como alternativa para testar uma planilha antes de publicá-la.
       </div>
       <button id="showFormatHelp" class="link-btn">Ver formato aceito</button>
     </section>

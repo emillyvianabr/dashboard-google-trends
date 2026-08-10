@@ -1,4 +1,4 @@
-let D = window.TRENDS_DATA;
+let D = window.TRENDS_DATA || {series:[],geo2026:[],term:'Pão de Açúcar',updated:null};
 const ORANGE = "#f37021", ORANGE2 = "#ffad78", DARK = "#c84d00", MUTED="#a8adb4", GREEN="#2e7d32", RED="#bf3b2b";
 const months = ["Jan","Fev","Mar","Abr","Mai","Jun","Jul","Ago","Set","Out","Nov","Dez"];
 let charts = {};
@@ -348,6 +348,40 @@ function refreshFiltersFromData(){
   endDate.min=dates[0].slice(0,7);endDate.max=dates.at(-1).slice(0,7);
   startDate.value="";endDate.value="";
 }
+
+async function loadRepositoryWorkbook(){
+  const status=document.querySelector("#uploadStatus");
+  try{
+    status.textContent="Carregando data/dados.xlsx…";
+    status.className="upload-status";
+    const response=await fetch(`data/dados.xlsx?v=${Date.now()}`, {cache:"no-store"});
+    if(!response.ok) throw new Error(`HTTP ${response.status}`);
+    const buf=await response.arrayBuffer();
+    const wb=XLSX.read(buf,{type:"array",cellDates:true});
+    const preferred=wb.SheetNames.find(n=>normalizeHeader(n)==="serie_mensal");
+    const ws=wb.Sheets[preferred||wb.SheetNames[0]];
+    const series=rowsFromWorksheet(ws);
+
+    D={
+      ...D,
+      series,
+      geo2026:rebuildGeoFromSeries(series),
+      updated:new Date().toISOString().slice(0,10),
+      sourceFile:"data/dados.xlsx"
+    };
+    refreshFiltersFromData();
+    updateAll();
+    status.textContent=`data/dados.xlsx · ${series.length} linhas`;
+    status.className="upload-status success";
+    return true;
+  }catch(err){
+    console.warn("Não foi possível carregar a planilha do repositório:",err);
+    status.textContent="Não foi possível carregar data/dados.xlsx · usando base de fallback";
+    status.className="upload-status error";
+    return false;
+  }
+}
+
 async function handleUpload(file){
   const status=document.querySelector("#uploadStatus");
   try{
@@ -383,5 +417,12 @@ document.querySelector("#showFormatHelp").addEventListener("click",()=>{
   document.querySelector("#formatHelp").classList.toggle("hidden");
 });
 
-setupFilters();
-updateAll();
+if(D.series.length){
+  setupFilters();
+  updateAll();
+}
+loadRepositoryWorkbook().then(ok=>{
+  if(!ok && !D.series.length){
+    document.querySelector("#autoInsight").textContent="Nenhuma base pôde ser carregada. Verifique se data/dados.xlsx existe no repositório.";
+  }
+});
