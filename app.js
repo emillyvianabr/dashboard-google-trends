@@ -1,4 +1,4 @@
-let D = window.TRENDS_DATA || {series:[],geo2026:[],term:'Pão de Açúcar',updated:null};
+let D = window.TRENDS_DATA || {series:[],geo2026:[],geoHistory:[],term:'Pão de Açúcar',updated:null};
 const ORANGE = "#F47A2A", ORANGE2 = "#FDBA8C", DARK = "#C95B13", MUTED="#AAB0B7", GREEN="#23885A", RED="#C94A3A";
 const months = ["Jan","Fev","Mar","Abr","Mai","Jun","Jul","Ago","Set","Out","Nov","Dez"];
 let charts = {};
@@ -14,16 +14,19 @@ function mean(a){ return a.length ? a.reduce((x,y)=>x+y,0)/a.length : NaN; }
 function stdev(a){ if(a.length<2) return NaN; const m=mean(a); return Math.sqrt(a.reduce((s,x)=>s+(x-m)**2,0)/(a.length-1)); }
 function selectedMarket(){ return marketFilter.value; }
 function selectedYear(){ return yearFilter.value === "ALL" ? null : +yearFilter.value; }
-function marketRows(code=selectedMarket()){ return D.series.filter(r => code==="ALL" || r.marketCode===code); }
+function marketRows(code=selectedMarket()){ return D.series.filter(r => r.marketCode===code); }
 function monthsComparable(curr, prev){ const maxMonth = Math.max(...curr.map(r=>r.month)); return [curr.filter(r=>r.month<=maxMonth), prev.filter(r=>r.month<=maxMonth)]; }
 function colorMetric(v){ return v > 0.001 ? "positive" : v < -0.001 ? "negative" : ""; }
 
 function setupFilters(){
-  const marketOrder = ["ALL","BR","AR","CL","CO","UY","US","FR","WORLD"];
-  marketFilter.innerHTML = marketOrder.map(c => `<option value="${c}">${c==="ALL"?"Todos os mercados":D.series.find(r=>r.marketCode===c).market}</option>`).join("");
+  const marketOrder = ["WORLD","BR","AR","CL","CO","UY","US","FR"];
+  marketFilter.innerHTML = marketOrder
+    .filter(c => D.series.some(r=>r.marketCode===c))
+    .map(c => `<option value="${c}">${D.series.find(r=>r.marketCode===c).market}</option>`)
+    .join("");
   const years = [...new Set(D.series.map(r=>r.year))].sort((a,b)=>b-a);
   yearFilter.innerHTML = `<option value="ALL">Todos os anos</option>` + years.map(y=>`<option value="${y}">${y}</option>`).join("");
-  marketFilter.value = "BR";
+  marketFilter.value = D.series.some(r=>r.marketCode==="WORLD") ? "WORLD" : "BR";
   yearFilter.value = "2026";
   const dates = D.series.map(r=>r.date).sort();
   startDate.min = dates[0].slice(0,7); startDate.max = dates.at(-1).slice(0,7);
@@ -59,7 +62,7 @@ function updateKPIs(){
   const vals=base.map(r=>r.value);
   const avg=mean(vals);
   document.querySelector("#kpiAvg").textContent=fmt(avg);
-  document.querySelector("#kpiAvgSub").textContent=year ? `${year} · ${code==="ALL"?"todos os mercados":base[0]?.market||""}` : "período completo";
+  document.querySelector("#kpiAvgSub").textContent=year ? `${year} · ${base[0]?.market||""}` : "período completo";
 
   let yoy=NaN;
   if(year){
@@ -102,12 +105,7 @@ function updateTrend(){
     data=data.filter(r=>r.year<y || (r.year===y && r.month<=m));
   }
   data.sort((a,b)=>a.date.localeCompare(b.date));
-  // if all markets, aggregate mean by date
   let chartRows=data;
-  if(code==="ALL"){
-    const by={}; data.forEach(r=>(by[r.date]??=[]).push(r.value));
-    chartRows=Object.entries(by).map(([date,v])=>({date,value:mean(v)})).sort((a,b)=>a.date.localeCompare(b.date));
-  }
   charts.trend=new Chart(document.querySelector("#trendChart"),{
     type:"line",
     data:{labels:chartRows.map(r=>new Date(r.date+"T00:00:00").toLocaleDateString("pt-BR",{month:"short",year:"2-digit"})),
@@ -124,10 +122,6 @@ function updateComparison(){
   title.textContent=`${year} × ${year-1}`;
   let current=marketRows(code).filter(r=>r.year===year);
   let previous=marketRows(code).filter(r=>r.year===year-1);
-  if(code==="ALL"){
-    const ag=(arr)=>{const b={};arr.forEach(r=>(b[r.month]??=[]).push(r.value));return Object.entries(b).map(([month,v])=>({month:+month,value:mean(v)}));};
-    current=ag(current); previous=ag(previous);
-  }
   const byCur=Object.fromEntries(current.map(r=>[r.month,r.value]));
   const byPrev=Object.fromEntries(previous.map(r=>[r.month,r.value]));
   charts.comparison=new Chart(document.querySelector("#comparisonChart"),{
@@ -151,11 +145,7 @@ function seasonColor(v){
   return `rgb(${a.map((x,i)=>Math.round(x+(b[i]-x)*t)).join(",")})`;
 }
 function updateSeasonality(){
-  let vals;
-  if(selectedMarket()==="ALL"){
-    const allCodes=["BR","AR","CL","CO","UY","US","FR","WORLD"];
-    vals=months.map((_,i)=>mean(allCodes.map(c=>seasonIndexFor(c)[i])));
-  } else vals=seasonIndexFor(selectedMarket());
+  const vals=seasonIndexFor(selectedMarket());
   document.querySelector("#seasonalityGrid").innerHTML=months.map((m,i)=>`
     <div class="season-cell" style="background:${seasonColor(vals[i])}">
       <span>${m}</span><b>${fmt(vals[i],2)}</b>
@@ -164,32 +154,52 @@ function updateSeasonality(){
 
 function metricByMarket(metric){
   const yr=selectedYear();
-  const codes=["BR","AR","CL","CO","UY","US","FR"];
+  const codes=[...new Set(D.series.map(r=>r.marketCode))]
+    .filter(c=>c!=="WORLD")
+    .sort();
   let result=[];
   codes.forEach(code=>{
     const all=marketRows(code);
-    if(metric==="avg"){
-      const d=yr?all.filter(r=>r.year===yr):all;
-      result.push({code,name:namesFrom(code),v:mean(d.map(r=>r.value))});
-    }
+
     if(metric==="yoy"){
       if(!yr) return;
       const cur=all.filter(r=>r.year===yr), prev=all.filter(r=>r.year===yr-1);
-      if(!cur.length||!prev.length)return;
+      if(!cur.length||!prev.length) return;
       const [c,p]=monthsComparable(cur,prev);
-      result.push({code,name:namesFrom(code),v:mean(c.map(r=>r.value))/mean(p.map(r=>r.value))-1});
+      const prevMean=mean(p.map(r=>r.value));
+      if(!Number.isFinite(prevMean) || prevMean===0) return;
+      result.push({
+        code,
+        name:namesFrom(code),
+        v:mean(c.map(r=>r.value))/prevMean-1
+      });
     }
+
     if(metric==="momentum"){
-      const d=(yr?all.filter(r=>r.year===yr):all).sort((a,b)=>a.date.localeCompare(b.date));
-      if(d.length<6)return;
-      result.push({code,name:namesFrom(code),v:mean(d.slice(-3).map(r=>r.value))/mean(d.slice(-6,-3).map(r=>r.value))-1});
+      const d=(yr?all.filter(r=>r.year===yr):all)
+        .sort((a,b)=>a.date.localeCompare(b.date));
+      if(d.length<6) return;
+      const previous=mean(d.slice(-6,-3).map(r=>r.value));
+      if(!Number.isFinite(previous) || previous===0) return;
+      result.push({
+        code,
+        name:namesFrom(code),
+        v:mean(d.slice(-3).map(r=>r.value))/previous-1
+      });
     }
+
     if(metric==="vol"){
       const d=yr?all.filter(r=>r.year===yr):all;
-      const vals=d.map(r=>r.value); result.push({code,name:namesFrom(code),v:stdev(vals)/mean(vals)});
+      const vals=d.map(r=>r.value);
+      const avg=mean(vals);
+      if(vals.length<2 || !Number.isFinite(avg) || avg===0) return;
+      result.push({
+        code,
+        name:namesFrom(code),
+        v:stdev(vals)/avg
+      });
     }
   });
-  if(selectedMarket()!=="ALL") result=result.filter(x=>x.code===selectedMarket());
   return result.sort((a,b)=>b.v-a.v);
 }
 function namesFrom(c){return D.series.find(r=>r.marketCode===c)?.market||c;}
@@ -211,8 +221,15 @@ function makeBar(id,key,data,isPct=false){
     }
   });
 }
+function geoRankingData(){
+  return (D.geo2026||[])
+    .filter(x=>Number.isFinite(x.value))
+    .sort((a,b)=>b.value-a.value)
+    .slice(0,15)
+    .map(x=>({name:x.country,v:x.value}));
+}
 function updateMarketCharts(){
-  makeBar("#rankingChart","ranking",metricByMarket("avg"),false);
+  makeBar("#rankingChart","ranking",geoRankingData(),false);
   makeBar("#yoyChart","yoy",metricByMarket("yoy"),true);
   makeBar("#momentumChart","momentum",metricByMarket("momentum"),true);
   makeBar("#volatilityChart","volatility",metricByMarket("vol"),true);
@@ -221,23 +238,64 @@ function updateMarketCharts(){
 function updatePeaks(){
   let data=marketRows(selectedMarket());
   const yr=selectedYear(); if(yr)data=data.filter(r=>r.year===yr);
-  if(selectedMarket()==="ALL"){
-    const b={}; data.forEach(r=>{const k=r.date;(b[k]??=[]).push(r.value)});
-    data=Object.entries(b).map(([date,v])=>{const d=new Date(date+"T00:00:00");return {date,year:d.getFullYear(),month:d.getMonth()+1,value:mean(v),market:"Média dos mercados"}});
-  }
   data=[...data].sort((a,b)=>b.value-a.value).slice(0,5);
   document.querySelector("#peaksTable").innerHTML=data.map((r,i)=>`
     <div class="peak-row"><div class="peak-rank">${i+1}</div><div><strong>${months[r.month-1]} ${r.year}</strong><small>${r.market||namesFrom(r.marketCode)}</small></div><strong>${fmt(r.value,0)}</strong></div>`).join("");
 }
 
+const CORE_GEO = new Set(["brasil","argentina","chile","colombia","uruguai","estados unidos","franca"]);
+function normalizeCountryName(s){return String(s??"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase().trim();}
+function isCoreCountry(country){return CORE_GEO.has(normalizeCountryName(country));}
+
 function updateGeo(){
   destroy("geo");
-  let data=D.geo2026.filter(x=>Number.isFinite(x.value)).sort((a,b)=>b.value-a.value).slice(0,10);
+  let data=(D.geo2026||[]).filter(x=>Number.isFinite(x.value)).sort((a,b)=>b.value-a.value).slice(0,15);
   charts.geo=new Chart(document.querySelector("#geoChart"),{
     type:"bar",
-    data:{labels:data.map(x=>x.country),datasets:[{data:data.map(x=>x.value),backgroundColor:ORANGE,borderRadius:7,borderSkipped:false}]},
-    options:{...standardOptions(),indexAxis:"y",scales:{x:{grid:{color:"#ECEEF0"},border:{display:false},beginAtZero:true},y:{grid:{display:false},border:{display:false}}}}
+    data:{labels:data.map(x=>x.country),datasets:[{
+      data:data.map(x=>x.value),
+      backgroundColor:data.map(x=>isCoreCountry(x.country)?"#C9CDD2":ORANGE),
+      borderRadius:7,borderSkipped:false
+    }]},
+    options:{...standardOptions(),indexAxis:"y",plugins:{legend:{display:false},tooltip:{backgroundColor:"#1D232A",callbacks:{afterLabel:(ctx)=>isCoreCountry(data[ctx.dataIndex].country)?"Mercado monitorado":"Fora do recorte principal"}}},scales:{x:{grid:{color:"#ECEEF0"},border:{display:false},beginAtZero:true},y:{grid:{display:false},border:{display:false}}}}
   });
+  updateGeoRadar();
+}
+
+function geoSnapshots(){
+  const hist=(D.geoHistory||[]).filter(x=>x.date&&x.country&&Number.isFinite(x.value));
+  const dates=[...new Set(hist.map(x=>x.date))].sort();
+  return {hist,dates};
+}
+function updateGeoRadar(){
+  const host=document.querySelector("#geoRadar");
+  const status=document.querySelector("#geoHistoryStatus");
+  const subtitle=document.querySelector("#geoRadarSubtitle");
+  if(!host)return;
+  const {hist,dates}=geoSnapshots();
+  const current=(D.geo2026||[]).filter(x=>Number.isFinite(x.value)&&!isCoreCountry(x.country));
+  let rows=[];
+  if(dates.length>=2){
+    const prevDate=dates.at(-2), lastDate=dates.at(-1);
+    const prev=new Map(hist.filter(x=>x.date===prevDate).map(x=>[normalizeCountryName(x.country),x.value]));
+    const last=hist.filter(x=>x.date===lastDate&&!isCoreCountry(x.country));
+    rows=last.map(x=>{const p=prev.get(normalizeCountryName(x.country));return {...x,delta:Number.isFinite(p)?x.value-p:null,previous:p};})
+      .sort((a,b)=>(Number.isFinite(b.delta)?b.delta:-999)-(Number.isFinite(a.delta)?a.delta:-999)||b.value-a.value).slice(0,12);
+    status.textContent=`${dates.length} snapshots · último ${lastDate.split("-").reverse().join("/")}`;
+    subtitle.textContent="Priorizado pelo crescimento entre os dois snapshots geográficos mais recentes.";
+  }else{
+    rows=current.sort((a,b)=>b.value-a.value).slice(0,12).map(x=>({...x,delta:null}));
+    status.textContent=`${Math.max(dates.length,1)} snapshot geográfico`;
+    subtitle.textContent="Ainda sem histórico suficiente: ranking pelo interesse geográfico mais recente.";
+  }
+  host.innerHTML=rows.map((r,i)=>`
+    <div class="geo-radar-item">
+      <div class="geo-rank">${i+1}</div>
+      <div class="geo-country"><strong>${r.country}</strong><small>fora do recorte principal</small></div>
+      <div class="geo-metric"><strong>${fmt(r.value,Number.isInteger(r.value)?0:1)}</strong>
+        ${Number.isFinite(r.delta)?`<small class="${r.delta>0?"up":r.delta<0?"down":""}">${r.delta>0?"+":""}${fmt(r.delta,1)} pts</small>`:`<small>interesse atual</small>`}
+      </div>
+    </div>`).join("");
 }
 
 function updateInsight(){
@@ -246,7 +304,7 @@ function updateInsight(){
   if(yr){
     const yoy=metricByMarket("yoy");
     const mom=metricByMarket("momentum");
-    if(code==="ALL" && yoy.length){
+    if(false && yoy.length){
       const best=yoy[0], worst=yoy.at(-1);
       const hot=mom[0];
       text=`Em ${yr}, ${best.name} apresenta a maior variação anual entre os mercados exibidos (${pct(best.v)}), enquanto ${worst.name} registra a menor (${pct(worst.v)}). No recorte de momentum, ${hot?.name||"—"} aparece com o sinal mais favorável nos meses mais recentes. Use os picos e a sazonalidade para investigar se essa mudança é estrutural ou ligada a períodos específicos.`;
@@ -268,7 +326,7 @@ yearFilter.addEventListener("change",()=>{startDate.value="";endDate.value="";up
 startDate.addEventListener("change",updateTrend);
 endDate.addEventListener("change",updateTrend);
 document.querySelector("#clearDates").addEventListener("click",()=>{startDate.value="";endDate.value="";updateTrend();});
-document.querySelector("#resetFilters").addEventListener("click",()=>{marketFilter.value="BR";yearFilter.value="2026";startDate.value="";endDate.value="";updateAll();});
+document.querySelector("#resetFilters").addEventListener("click",()=>{marketFilter.value=D.series.some(r=>r.marketCode==="WORLD")?"WORLD":"BR";yearFilter.value="2026";startDate.value="";endDate.value="";updateAll();});
 
 
 function normalizeHeader(h){
@@ -327,6 +385,30 @@ function rowsFromWorksheet(ws){
   if(!parsed.length) throw new Error("Nenhuma linha válida foi encontrada.");
   return parsed.sort((a,b)=>a.date.localeCompare(b.date)||a.marketCode.localeCompare(b.marketCode));
 }
+function geoRowsFromWorksheet(ws){
+  if(!ws)return [];
+  const matrix=XLSX.utils.sheet_to_json(ws,{header:1,defval:null,raw:true});
+  if(matrix.length<2)return [];
+  const h=matrix[0].map(normalizeHeader);
+  const c=(...names)=>names.map(n=>h.indexOf(normalizeHeader(n))).find(i=>i>=0);
+  const ipais=c("pais","country","mercado");
+  const ival=c("indice_trends_num","indice_trends","value","valor");
+  const idisp=c("indice_trends_exibicao","display");
+  if(ipais===undefined||ival===undefined)return [];
+  return matrix.slice(1).map(r=>({country:String(r[ipais]??"").trim(),value:Number(r[ival]),display:idisp===undefined?String(r[ival]??""):String(r[idisp]??"")})).filter(x=>x.country&&Number.isFinite(x.value));
+}
+function geoHistoryFromWorksheet(ws){
+  if(!ws)return [];
+  const matrix=XLSX.utils.sheet_to_json(ws,{header:1,defval:null,raw:true});
+  if(matrix.length<2)return [];
+  const h=matrix[0].map(normalizeHeader);
+  const c=(...names)=>names.map(n=>h.indexOf(normalizeHeader(n))).find(i=>i>=0);
+  const idate=c("data_snapshot","data","date");
+  const ipais=c("pais","country");
+  const ival=c("indice_trends_num","indice_trends","value","valor");
+  if(idate===undefined||ipais===undefined||ival===undefined)return [];
+  return matrix.slice(1).map(r=>{const d=parseDateValue(r[idate]);return {date:d?`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`:"",country:String(r[ipais]??"").trim(),value:Number(r[ival])};}).filter(x=>x.date&&x.country&&Number.isFinite(x.value));
+}
 function rebuildGeoFromSeries(series){
   const latestYear=Math.max(...series.map(r=>r.year));
   const latest=series.filter(r=>r.year===latestYear);
@@ -338,10 +420,10 @@ function refreshFiltersFromData(){
   const currentMarket=marketFilter.value;
   const currentYear=yearFilter.value;
   const markets=[...new Map(D.series.map(r=>[r.marketCode,r.market])).entries()].sort((a,b)=>a[1].localeCompare(b[1],"pt-BR"));
-  marketFilter.innerHTML=`<option value="ALL">Todos os mercados</option>`+markets.map(([c,n])=>`<option value="${c}">${n}</option>`).join("");
+  marketFilter.innerHTML=markets.map(([c,n])=>`<option value="${c}">${n}</option>`).join("");
   const years=[...new Set(D.series.map(r=>r.year))].sort((a,b)=>b-a);
   yearFilter.innerHTML=`<option value="ALL">Todos os anos</option>`+years.map(y=>`<option value="${y}">${y}</option>`).join("");
-  marketFilter.value=markets.some(([c])=>c===currentMarket)?currentMarket:(markets.some(([c])=>c==="BR")?"BR":"ALL");
+  marketFilter.value=markets.some(([c])=>c===currentMarket)?currentMarket:(markets.some(([c])=>c==="WORLD")?"WORLD":markets[0]?.[0]||"");
   yearFilter.value=years.includes(+currentYear)?currentYear:String(years[0]);
   const dates=D.series.map(r=>r.date).sort();
   startDate.min=dates[0].slice(0,7);startDate.max=dates.at(-1).slice(0,7);
@@ -361,11 +443,16 @@ async function loadRepositoryWorkbook(){
     const preferred=wb.SheetNames.find(n=>normalizeHeader(n)==="serie_mensal");
     const ws=wb.Sheets[preferred||wb.SheetNames[0]];
     const series=rowsFromWorksheet(ws);
+    const geoSheetName=wb.SheetNames.find(n=>normalizeHeader(n)==="geo_2026");
+    const histSheetName=wb.SheetNames.find(n=>normalizeHeader(n)==="geo_historico");
+    const geo2026=geoSheetName?geoRowsFromWorksheet(wb.Sheets[geoSheetName]):rebuildGeoFromSeries(series);
+    const geoHistory=histSheetName?geoHistoryFromWorksheet(wb.Sheets[histSheetName]):[];
 
     D={
       ...D,
       series,
-      geo2026:rebuildGeoFromSeries(series),
+      geo2026,
+      geoHistory,
       updated:new Date().toISOString().slice(0,10),
       sourceFile:"data/dados.xlsx"
     };
@@ -391,10 +478,13 @@ async function handleUpload(file){
     const preferred=wb.SheetNames.find(n=>normalizeHeader(n)==="serie_mensal");
     const ws=wb.Sheets[preferred||wb.SheetNames[0]];
     const series=rowsFromWorksheet(ws);
+    const geoSheetName=wb.SheetNames.find(n=>normalizeHeader(n)==="geo_2026");
+    const histSheetName=wb.SheetNames.find(n=>normalizeHeader(n)==="geo_historico");
     D={
       ...D,
       series,
-      geo2026:rebuildGeoFromSeries(series),
+      geo2026:geoSheetName?geoRowsFromWorksheet(wb.Sheets[geoSheetName]):rebuildGeoFromSeries(series),
+      geoHistory:histSheetName?geoHistoryFromWorksheet(wb.Sheets[histSheetName]):[],
       updated:new Date().toISOString().slice(0,10),
       sourceFile:file.name
     };
