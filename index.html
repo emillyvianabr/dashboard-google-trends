@@ -4,261 +4,238 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Google Trends — Bondinho / Pão de Açúcar</title>
-  <meta name="description" content="Dashboard de interesse de busca do Bondinho / Pão de Açúcar por mercado e período.">
+  <meta name="description" content="Dashboard de inteligência de mercado do Bondinho / Pão de Açúcar com dados do Google Trends.">
   <link rel="preconnect" href="https://cdn.jsdelivr.net">
-  <link rel="stylesheet" href="bondinho-dashboard.css?v=20260810-2">
+  <link rel="stylesheet" href="bondinho-premium.css?v=20260810-1">
 </head>
 <body>
-  <header class="topbar">
-    <div class="topbar-inner">
-      <div class="brand-block">
-        <div class="brand-row">
-          <span class="brand-mark"></span>
-          <span class="brand-label">INTELIGÊNCIA DE MERCADO</span>
-          <span class="brand-separator">/</span>
-          <span class="brand-label muted-brand">GOOGLE TRENDS</span>
-        </div>
-        <h1>Bondinho <span>/ Pão de Açúcar</span></h1>
-        <p>Interesse de busca, sazonalidade e evolução por mercado.</p>
+  <div class="accent-bar"></div>
+  <header class="site-header">
+    <div class="shell header-grid">
+      <div class="title-block">
+        <div class="eyebrow"><span></span> Inteligência de Mercado · Google Trends</div>
+        <h1>Bondinho <em>/</em> Pão de Açúcar</h1>
+        <p>Interesse de busca, evolução temporal, sazonalidade e sinais de oportunidade por mercado.</p>
       </div>
-      <div class="source-badge">
-        <span class="source-label">Tema analisado</span>
-        <strong>Pão de Açúcar</strong>
-        <small>Google Trends · índice relativo 0–100</small>
+      <div class="header-meta">
+        <div class="meta-label">Tema analisado</div>
+        <div class="meta-value">Pão de Açúcar</div>
+        <div class="meta-note">Índice Google Trends · 0–100</div>
       </div>
     </div>
   </header>
 
-  <main class="container">
-    <section class="control-shell">
-      <div class="control-primary">
-        <div class="filter-field">
+  <main class="shell dashboard">
+    <section class="filter-bar" aria-label="Filtros do dashboard">
+      <div class="filters-left">
+        <div class="field">
           <label for="marketFilter">Mercado</label>
           <select id="marketFilter"></select>
         </div>
-        <div class="filter-field compact">
+        <div class="field field-small">
           <label for="yearFilter">Ano</label>
           <select id="yearFilter"></select>
         </div>
-        <button id="resetFilters" class="text-btn">Limpar</button>
+        <button id="resetFilters" class="ghost-button" type="button">Restaurar</button>
       </div>
-
-      <div class="control-secondary">
+      <div class="data-actions">
         <span id="uploadStatus" class="data-status">Carregando data/dados.xlsx…</span>
         <details class="data-menu">
-          <summary>Atualizar base</summary>
+          <summary>Base de dados</summary>
           <div class="data-menu-panel">
-            <p><strong>Fonte oficial:</strong> <code>data/dados.xlsx</code></p>
-            <p>Para atualizar o dashboard publicado, substitua esse arquivo no GitHub mantendo o mesmo nome.</p>
-            <label class="upload-btn" for="fileUpload">Testar planilha local</label>
+            <div class="menu-title">Atualização da base</div>
+            <p>O dashboard lê automaticamente <code>data/dados.xlsx</code>.</p>
+            <p>Para publicar uma atualização, substitua esse arquivo no repositório.</p>
+            <label class="upload-btn" for="fileUpload">Testar planilha localmente</label>
             <input type="file" id="fileUpload" accept=".xlsx,.xls,.csv" hidden>
-            <button id="showFormatHelp" class="link-btn">Ver formato aceito</button>
+            <button id="showFormatHelp" class="link-btn" type="button">Ver formato aceito</button>
             <div id="formatHelp" class="format-help hidden">
-              <p><code>data</code> · <code>mercado_codigo</code> · <code>mercado</code> · <code>indice_trends</code></p>
-              <small>Em XLSX, o dashboard procura primeiro a aba <code>serie_mensal</code>.</small>
+              <code>data</code> · <code>mercado_codigo</code> · <code>mercado</code> · <code>indice_trends</code>
             </div>
           </div>
         </details>
       </div>
     </section>
 
-    <div class="section-heading">
-      <div><span>VISÃO GERAL</span><h2>Desempenho do mercado selecionado</h2></div>
-      <p>Leitura consolidada do período e comparação com o histórico recente.</p>
-    </div>
+    <section class="section-block overview-section">
+      <div class="section-intro">
+        <div>
+          <span class="section-kicker">Visão geral</span>
+          <h2>Desempenho do mercado selecionado</h2>
+        </div>
+        <p>Os indicadores abaixo respondem aos filtros de mercado e ano.</p>
+      </div>
 
-    <section class="kpis">
-      <article class="kpi"><span>Interesse médio</span><strong id="kpiAvg">—</strong><small id="kpiAvgSub">—</small></article>
-      <article class="kpi"><span>Variação vs. ano anterior</span><strong id="kpiYoy">—</strong><small id="kpiYoySub">—</small></article>
-      <article class="kpi"><span>Momentum recente</span><strong id="kpiMomentum">—</strong><small>3 meses mais recentes vs. 3 anteriores</small></article>
-      <article class="kpi"><span>Pico do período</span><strong id="kpiPeak">—</strong><small id="kpiPeakSub">—</small></article>
-      <article class="kpi"><span>Volatilidade</span><strong id="kpiVol">—</strong><small>Coeficiente de variação</small></article>
+      <div class="kpi-grid">
+        <article class="kpi-card primary-kpi">
+          <div class="kpi-label">Interesse atual</div>
+          <strong id="kpiCurrent">—</strong>
+          <small id="kpiCurrentSub">último mês disponível</small>
+        </article>
+        <article class="kpi-card">
+          <div class="kpi-label">Interesse médio</div>
+          <strong id="kpiAvg">—</strong>
+          <small id="kpiAvgSub">—</small>
+        </article>
+        <article class="kpi-card">
+          <div class="kpi-label">Variação anual</div>
+          <strong id="kpiYoy">—</strong>
+          <small id="kpiYoySub">—</small>
+        </article>
+        <article class="kpi-card">
+          <div class="kpi-label">Momentum recente</div>
+          <strong id="kpiMomentum">—</strong>
+          <small>3 meses vs. 3 anteriores</small>
+        </article>
+        <article class="kpi-card">
+          <div class="kpi-label">Volatilidade</div>
+          <strong id="kpiVol">—</strong>
+          <small>coeficiente de variação</small>
+        </article>
+      </div>
     </section>
 
-    <section class="card card-wide trend-card">
-      <div class="card-head trend-head">
+    <section class="panel hero-chart-panel">
+      <div class="panel-head">
         <div>
-          <span class="section-tag">TENDÊNCIA</span>
+          <span class="section-kicker">Tendência</span>
           <h2>Interesse ao longo do tempo</h2>
-          <p>Ajuste o intervalo apenas para este gráfico.</p>
+          <p>Evolução mensal do mercado selecionado. O intervalo abaixo afeta somente este gráfico.</p>
         </div>
-        <div class="date-filters">
-          <div><label for="startDate">De</label><input type="month" id="startDate"></div>
-          <div><label for="endDate">Até</label><input type="month" id="endDate"></div>
-          <button id="clearDates" class="mini-btn">Todo período</button>
+        <div class="date-controls">
+          <div class="month-field"><label for="startDate">De</label><input type="month" id="startDate"></div>
+          <div class="month-field"><label for="endDate">Até</label><input type="month" id="endDate"></div>
+          <button id="clearDates" class="soft-button" type="button">Todo período</button>
         </div>
       </div>
-      <div class="chart-wrap large"><canvas id="trendChart"></canvas></div>
+      <div class="chart-wrap chart-xl"><canvas id="trendChart"></canvas></div>
     </section>
 
-    <div class="section-heading">
-      <div><span>COMPORTAMENTO</span><h2>Evolução e sazonalidade</h2></div>
-      <p>Como o interesse muda no tempo e ao longo dos meses.</p>
-    </div>
-
-    <section class="grid-2">
-      <article class="card">
-        <div class="card-head"><div><span class="section-tag">COMPARATIVO</span><h2 id="comparisonTitle">Ano selecionado × anterior</h2><p>Compara mês a mês no mesmo mercado.</p></div></div>
-        <div class="chart-wrap"><canvas id="comparisonChart"></canvas></div>
-      </article>
-
-      <article class="card">
-        <div class="card-head"><div><span class="section-tag">SAZONALIDADE</span><h2>Perfil sazonal</h2><p>Índice do mês em relação à média histórica do mercado.</p></div></div>
-        <div class="seasonality" id="seasonalityGrid"></div>
-        <div class="legend"><span>abaixo do normal</span><div class="gradient"></div><span>acima do normal</span></div>
-      </article>
-    </section>
-
-    <div class="section-heading">
-      <div><span>MERCADOS</span><h2>Onde o interesse está mais forte</h2></div>
-      <p>Ranking, crescimento e sinais de aceleração entre os mercados.</p>
-    </div>
-
-    <section class="grid-2">
-      <article class="card">
-        <div class="card-head"><div><span class="section-tag">RANKING</span><h2>Ranking de interesse</h2><p>Média do ano selecionado.</p></div></div>
-        <div class="chart-wrap"><canvas id="rankingChart"></canvas></div>
-      </article>
-
-      <article class="card">
-        <div class="card-head"><div><span class="section-tag">CRESCIMENTO</span><h2>Variação anual por mercado</h2><p>Ano selecionado contra o anterior, usando meses comparáveis.</p></div></div>
-        <div class="chart-wrap"><canvas id="yoyChart"></canvas></div>
-      </article>
-    </section>
-
-    <section class="grid-2">
-      <article class="card">
-        <div class="card-head"><div><span class="section-tag">MOMENTUM</span><h2>Quem está acelerando agora?</h2><p>Últimos 3 meses disponíveis contra os 3 anteriores.</p></div></div>
-        <div class="chart-wrap"><canvas id="momentumChart"></canvas></div>
-      </article>
-
-      <article class="card">
-        <div class="card-head"><div><span class="section-tag">ESTABILIDADE</span><h2>Volatilidade do interesse</h2><p>Quanto maior o índice, mais oscilante é a série.</p></div></div>
-        <div class="chart-wrap"><canvas id="volatilityChart"></canvas></div>
-      </article>
-    </section>
-
-    <div class="section-heading">
-      <div><span>DIAGNÓSTICO</span><h2>Picos e distribuição geográfica</h2></div>
-      <p>Onde investigar eventos, campanhas e mudanças fora do padrão.</p>
-    </div>
-
-    <section class="grid-2">
-      <article class="card">
-        <div class="card-head"><div><span class="section-tag">PICOS</span><h2>Maiores picos do período</h2><p>Útil para investigar férias, campanhas, eventos e notícias.</p></div></div>
-        <div class="peaks" id="peaksTable"></div>
-      </article>
-
-      <article class="card geo-card">
-        <div class="card-head"><div><span class="section-tag">GEOGRAFIA</span><h2>Radar internacional de interesse</h2><p>Todos os países disponíveis no GeoMap — inclusive fora do recorte principal.</p></div></div>
-        <div class="geo-legend"><span><i class="geo-dot core"></i>mercado monitorado</span><span><i class="geo-dot opportunity"></i>fora do recorte</span></div>
-        <div class="chart-wrap"><canvas id="geoChart"></canvas></div>
-      </article>
-    </section>
-
-    <section class="card opportunity-card">
-      <div class="card-head opportunity-head">
+    <section class="section-block">
+      <div class="section-intro">
         <div>
-          <span class="section-tag">NOVOS MERCADOS</span>
-          <h2>Países fora do recorte para acompanhar</h2>
-          <p id="geoRadarSubtitle">Ranking pelo interesse geográfico mais recente.</p>
+          <span class="section-kicker">Comportamento</span>
+          <h2>Como a demanda se distribui no tempo</h2>
         </div>
-        <div class="radar-status" id="geoHistoryStatus">1 snapshot geográfico</div>
+        <p>Comparação anual e padrão sazonal do mercado selecionado.</p>
       </div>
-      <div id="geoRadar" class="geo-radar"></div>
-      <p class="geo-footnote">Quando a aba <code>geo_historico</code> tiver dois ou mais snapshots, esta seção passa a priorizar automaticamente os países com maior crescimento entre as últimas coletas.</p>
+      <div class="two-col behavior-grid">
+        <article class="panel">
+          <div class="panel-head compact-head">
+            <div><span class="mini-label">Comparativo</span><h3 id="comparisonTitle">Ano selecionado × anterior</h3><p>Meses equivalentes no mesmo mercado.</p></div>
+          </div>
+          <div class="chart-wrap"><canvas id="comparisonChart"></canvas></div>
+        </article>
+        <article class="panel season-panel">
+          <div class="panel-head compact-head">
+            <div><span class="mini-label">Sazonalidade</span><h3>Perfil sazonal</h3><p>Índice do mês em relação à média histórica do mercado.</p></div>
+          </div>
+          <div class="seasonality" id="seasonalityGrid"></div>
+          <div class="season-legend"><span>Abaixo da média</span><div></div><span>Acima da média</span></div>
+        </article>
+      </div>
     </section>
 
-    <details class="methodology-card">
+    <section class="section-block compare-section">
+      <div class="section-intro compare-intro">
+        <div>
+          <span class="section-kicker">Comparação entre mercados</span>
+          <h2>Quem cresce, acelera e oscila mais</h2>
+        </div>
+        <p>Estes gráficos <strong>não respondem ao filtro de mercado</strong>. O filtro de ano continua ativo.</p>
+      </div>
+      <div class="comparison-grid">
+        <article class="panel ranking-panel">
+          <div class="panel-head compact-head">
+            <div><span class="mini-label">GeoMap</span><h3>Ranking de interesse por país</h3><p>Comparação na mesma escala geográfica do Google Trends.</p></div>
+          </div>
+          <div class="chart-wrap chart-tall"><canvas id="rankingChart"></canvas></div>
+        </article>
+        <article class="panel">
+          <div class="panel-head compact-head"><div><span class="mini-label">YoY</span><h3>Variação anual por mercado</h3><p>Ano selecionado contra o anterior.</p></div></div>
+          <div class="chart-wrap"><canvas id="yoyChart"></canvas></div>
+        </article>
+        <article class="panel">
+          <div class="panel-head compact-head"><div><span class="mini-label">Momentum</span><h3>Quem está acelerando agora?</h3><p>Últimos três meses contra os três anteriores.</p></div></div>
+          <div class="chart-wrap"><canvas id="momentumChart"></canvas></div>
+        </article>
+        <article class="panel">
+          <div class="panel-head compact-head"><div><span class="mini-label">Estabilidade</span><h3>Volatilidade do interesse</h3><p>Quanto maior, mais oscilante é a série.</p></div></div>
+          <div class="chart-wrap"><canvas id="volatilityChart"></canvas></div>
+        </article>
+      </div>
+    </section>
+
+    <section class="section-block geography-section">
+      <div class="section-intro">
+        <div>
+          <span class="section-kicker">Radar internacional</span>
+          <h2>Mercados além do recorte principal</h2>
+        </div>
+        <p>Use o GeoMap para encontrar países relevantes que ainda não fazem parte do monitoramento temporal.</p>
+      </div>
+      <div class="geo-layout">
+        <article class="panel geo-panel">
+          <div class="panel-head compact-head">
+            <div><span class="mini-label">Distribuição geográfica</span><h3>Países com maior interesse relativo</h3><p>Mercados monitorados em cinza; oportunidades fora do recorte em laranja.</p></div>
+          </div>
+          <div class="geo-legend"><span><i class="geo-dot core"></i> Monitorado</span><span><i class="geo-dot opportunity"></i> Fora do recorte</span></div>
+          <div class="chart-wrap chart-tall"><canvas id="geoChart"></canvas></div>
+        </article>
+        <article class="panel radar-panel">
+          <div class="radar-head">
+            <div><span class="mini-label">Novos mercados</span><h3>Países para acompanhar</h3><p id="geoRadarSubtitle">Ranking pelo interesse geográfico mais recente.</p></div>
+            <span class="radar-status" id="geoHistoryStatus">1 snapshot geográfico</span>
+          </div>
+          <div id="geoRadar" class="geo-radar"></div>
+          <p class="geo-footnote">Com dois ou mais snapshots em <code>geo_historico</code>, o ranking passa a priorizar automaticamente crescimento entre coletas.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="section-block diagnostic-section">
+      <div class="section-intro">
+        <div><span class="section-kicker">Diagnóstico</span><h2>Meses que merecem investigação</h2></div>
+        <p>Picos ajudam a localizar períodos para cruzar com campanhas, férias, eventos e notícias.</p>
+      </div>
+      <div class="diagnostic-grid">
+        <article class="panel peaks-panel">
+          <div class="panel-head compact-head"><div><span class="mini-label">Top meses</span><h3>Maiores índices do período</h3></div></div>
+          <div class="peaks" id="peaksTable"></div>
+        </article>
+        <article class="insight-panel">
+          <span class="section-kicker light-kicker">Leitura automática</span>
+          <h3>O que o período está sinalizando?</h3>
+          <p id="autoInsight">—</p>
+        </article>
+      </div>
+    </section>
+
+    <details class="methodology">
       <summary>
-        <div>
-          <span class="section-tag">METODOLOGIA</span>
-          <h2>Como ler os dados do Google Trends</h2>
-        </div>
-        <span class="method-open">Ver metodologia</span>
+        <div><span class="section-kicker">Metodologia</span><h2>Como interpretar estes dados</h2></div>
+        <span class="method-action">Abrir</span>
       </summary>
-      <div class="methodology-content">
-<div class="methodology-intro">
-        <span class="section-tag">METODOLOGIA</span>
-        <h2>Como esta análise foi construída</h2>
-        <p>O dashboard usa dados do Google Trends para acompanhar o interesse relativo pelo atrativo associado ao Bondinho do Pão de Açúcar em diferentes mercados. A leitura deve ser feita como um indicador de comportamento de busca — e não como quantidade absoluta de pesquisas ou de visitantes.</p>
-      </div>
-
-      <div class="methodology-grid">
-        <article class="method-box">
-          <div class="method-number">01</div>
-          <h3>Por que “Pão de Açúcar”?</h3>
-          <p>A análise foi construída a partir do <strong>tema “Pão de Açúcar”</strong> no Google Trends. A escolha busca representar o atrativo de forma mais abrangente do que a palavra “Bondinho”, já que internacionalmente o destino tende a ser reconhecido pelo nome do próprio Pão de Açúcar e por suas traduções locais.</p>
-          <p>Assim, o objetivo não é medir apenas quem digita literalmente “Bondinho”, mas captar o interesse digital relacionado ao conceito do atrativo.</p>
-        </article>
-
-        <article class="method-box">
-          <div class="method-number">02</div>
-          <h3>Tema × termo de pesquisa</h3>
-          <p>No Google Trends, um <strong>termo de pesquisa</strong> representa a expressão digitada pelo usuário. Já um <strong>tema</strong> reúne diferentes termos que correspondem ao mesmo conceito, inclusive em outros idiomas.</p>
-          <div class="method-example">
-            <span>Exemplo conceitual</span>
-            <strong>Pão de Açúcar</strong>
-            <div class="method-tags">
-              <span>“Pão de Açúcar”</span>
-              <span>“Sugarloaf Mountain”</span>
-              <span>“Pan de Azúcar”</span>
-              <span>“Pain de Sucre”</span>
-            </div>
-          </div>
-          <p class="method-caution">Os exemplos acima ilustram a lógica de um tema; a composição exata utilizada pelo Google não é disponibilizada como uma lista fechada de expressões.</p>
-        </article>
-
-        <article class="method-box">
-          <div class="method-number">03</div>
-          <h3>Como funciona o índice 0–100?</h3>
-          <p>Os números do Google Trends são <strong>normalizados</strong>. Cada ponto considera a participação daquele tema no conjunto de buscas realizadas na região e no período analisados. Depois, os resultados são escalonados de 0 a 100.</p>
-          <div class="scale-demo">
-            <div><b>100</b><span>maior interesse relativo da série</span></div>
-            <div><b>50</b><span>interesse relativo equivalente à metade do pico</span></div>
-            <div><b>0</b><span>volume insuficiente ou interesse muito baixo para aparecer</span></div>
-          </div>
-          <p>Por isso, <strong>100 não significa 100 buscas</strong> e um país com índice maior não necessariamente possui mais pesquisas em números absolutos.</p>
-        </article>
-
-        <article class="method-box">
-          <div class="method-number">04</div>
-          <h3>Como interpretar os resultados</h3>
-          <p>O dashboard trabalha principalmente com <strong>evolução, sazonalidade, crescimento e aceleração do interesse relativo</strong>. Os dados ajudam a identificar mudanças de comportamento e mercados com sinais de maior ou menor atenção digital ao atrativo.</p>
-          <ul class="method-list">
-            <li><strong>Interesse médio:</strong> comportamento médio no período selecionado.</li>
-            <li><strong>YoY:</strong> comparação com o mesmo período do ano anterior.</li>
-            <li><strong>Momentum:</strong> últimos três meses disponíveis contra os três anteriores.</li>
-            <li><strong>Sazonalidade:</strong> meses historicamente acima ou abaixo da média.</li>
-            <li><strong>Volatilidade:</strong> intensidade das oscilações do interesse.</li>
-          </ul>
-        </article>
-      </div>
-
-      <div class="methodology-note">
-        <strong>Importante:</strong>
-        <span>Google Trends utiliza uma amostra agregada e anonimizada das buscas. Os indicadores devem ser tratados como uma fonte de inteligência de demanda e combinados, quando possível, com PAX, vendas, origem dos visitantes e outras bases de mercado.</span>
-      </div>
+      <div class="method-body">
+        <div class="method-grid">
+          <article><span>01</span><h3>Por que o tema “Pão de Açúcar”?</h3><p>O dashboard usa o <strong>tema</strong> associado a Pão de Açúcar para representar o atrativo de forma mais ampla do que uma expressão literal como “Bondinho”. Isso é especialmente útil na análise internacional, em que o destino pode ser reconhecido por traduções e variações locais.</p></article>
+          <article><span>02</span><h3>Tema × termo de pesquisa</h3><p>Um <strong>termo</strong> acompanha uma expressão pesquisada. Um <strong>tema</strong> agrupa pesquisas relacionadas ao mesmo conceito, inclusive em idiomas diferentes. A composição exata do agrupamento não é exibida pelo Google como lista fechada.</p></article>
+          <article><span>03</span><h3>O que significa 0–100?</h3><p>Os valores são normalizados. <strong>100 representa o maior interesse relativo dentro da série analisada</strong>; não significa 100 buscas. Os demais pontos são escalados em relação a esse comportamento.</p></article>
+          <article><span>04</span><h3>Como comparar países?</h3><p>As séries temporais baixadas separadamente devem ser usadas para analisar evolução dentro de cada mercado. Para comparar nível de interesse entre países, o dashboard usa o <strong>GeoMap</strong>, onde todos estão na mesma consulta e escala.</p></article>
+        </div>
+        <div class="method-note"><strong>Leitura recomendada:</strong> use Trends como indicador de atenção digital e combine com PAX, vendas, origem dos visitantes e demais dados de mercado sempre que possível.</div>
       </div>
     </details>
 
-    <section class="insight-card">
-      <div>
-        <span class="section-tag">INSIGHT</span>
-        <h2>Leitura do período</h2>
-      </div>
-      <p id="autoInsight">—</p>
-    </section>
-
     <footer>
-      <p><strong>Nota metodológica:</strong> Google Trends apresenta interesse relativo normalizado de 0 a 100. O valor 100 representa o pico de popularidade dentro da série/configuração analisada; os dados não equivalem a quantidade absoluta de buscas. Comparações entre mercados devem considerar a forma de exportação das séries.</p>
-      <p>Base atualizada em 10/08/2026 · Termo dos arquivos: “Pão de Açúcar”.</p>
+      <span>Google Trends · Tema “Pão de Açúcar”</span>
+      <span>Base atualizada pelo arquivo <code>data/dados.xlsx</code></span>
     </footer>
   </main>
 
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
   <script src="data.js"></script>
-  <script src="bondinho-dashboard.js?v=20260810-2"></script>
+  <script src="bondinho-premium.js?v=20260810-1"></script>
 </body>
 </html>
