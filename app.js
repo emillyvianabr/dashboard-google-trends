@@ -122,6 +122,7 @@ function updateComparison(){
   title.textContent=`${year} × ${year-1}`;
   let current=marketRows(code).filter(r=>r.year===year);
   let previous=marketRows(code).filter(r=>r.year===year-1);
+
   const byCur=Object.fromEntries(current.map(r=>[r.month,r.value]));
   const byPrev=Object.fromEntries(previous.map(r=>[r.month,r.value]));
   charts.comparison=new Chart(document.querySelector("#comparisonChart"),{
@@ -154,9 +155,7 @@ function updateSeasonality(){
 
 function metricByMarket(metric){
   const yr=selectedYear();
-  const codes=[...new Set(D.series.map(r=>r.marketCode))]
-    .filter(c=>c!=="WORLD")
-    .sort();
+  const codes=["BR","AR","CL","CO","UY","US","FR"].filter(c=>D.series.some(r=>r.marketCode===c));
   let result=[];
   codes.forEach(code=>{
     const all=marketRows(code);
@@ -168,24 +167,15 @@ function metricByMarket(metric){
       const [c,p]=monthsComparable(cur,prev);
       const prevMean=mean(p.map(r=>r.value));
       if(!Number.isFinite(prevMean) || prevMean===0) return;
-      result.push({
-        code,
-        name:namesFrom(code),
-        v:mean(c.map(r=>r.value))/prevMean-1
-      });
+      result.push({code,name:namesFrom(code),v:mean(c.map(r=>r.value))/prevMean-1});
     }
 
     if(metric==="momentum"){
-      const d=(yr?all.filter(r=>r.year===yr):all)
-        .sort((a,b)=>a.date.localeCompare(b.date));
+      const d=(yr?all.filter(r=>r.year===yr):all).sort((a,b)=>a.date.localeCompare(b.date));
       if(d.length<6) return;
       const previous=mean(d.slice(-6,-3).map(r=>r.value));
       if(!Number.isFinite(previous) || previous===0) return;
-      result.push({
-        code,
-        name:namesFrom(code),
-        v:mean(d.slice(-3).map(r=>r.value))/previous-1
-      });
+      result.push({code,name:namesFrom(code),v:mean(d.slice(-3).map(r=>r.value))/previous-1});
     }
 
     if(metric==="vol"){
@@ -193,11 +183,7 @@ function metricByMarket(metric){
       const vals=d.map(r=>r.value);
       const avg=mean(vals);
       if(vals.length<2 || !Number.isFinite(avg) || avg===0) return;
-      result.push({
-        code,
-        name:namesFrom(code),
-        v:stdev(vals)/avg
-      });
+      result.push({code,name:namesFrom(code),v:stdev(vals)/avg});
     }
   });
   return result.sort((a,b)=>b.v-a.v);
@@ -238,6 +224,7 @@ function updateMarketCharts(){
 function updatePeaks(){
   let data=marketRows(selectedMarket());
   const yr=selectedYear(); if(yr)data=data.filter(r=>r.year===yr);
+
   data=[...data].sort((a,b)=>b.value-a.value).slice(0,5);
   document.querySelector("#peaksTable").innerHTML=data.map((r,i)=>`
     <div class="peak-row"><div class="peak-rank">${i+1}</div><div><strong>${months[r.month-1]} ${r.year}</strong><small>${r.market||namesFrom(r.marketCode)}</small></div><strong>${fmt(r.value,0)}</strong></div>`).join("");
