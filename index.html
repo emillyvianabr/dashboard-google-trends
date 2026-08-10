@@ -1,0 +1,223 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Google Trends — Bondinho / Pão de Açúcar</title>
+  <meta name="description" content="Dashboard de interesse de busca do Bondinho / Pão de Açúcar por mercado e período.">
+  <link rel="preconnect" href="https://cdn.jsdelivr.net">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="hero">
+    <div>
+      <p class="eyebrow">INTELIGÊNCIA DE MERCADO · GOOGLE TRENDS</p>
+      <h1>Bondinho / Pão de Açúcar</h1>
+      <p class="subtitle">Evolução do interesse de busca, sazonalidade e sinais de aceleração por mercado.</p>
+    </div>
+    <div class="hero-note">
+      <span class="dot"></span>
+      <div><strong>Termo analisado no Google Trends</strong><br><span>Pão de Açúcar</span></div>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="filters global-filters">
+      <div>
+        <label for="marketFilter">Mercado</label>
+        <select id="marketFilter"></select>
+      </div>
+      <div>
+        <label for="yearFilter">Ano</label>
+        <select id="yearFilter"></select>
+      </div>
+      <button id="resetFilters" class="secondary-btn">Limpar filtros</button>
+
+      <div class="upload-control">
+        <label for="fileUpload">Atualizar dados</label>
+        <label class="upload-btn" for="fileUpload">Carregar planilha</label>
+        <input type="file" id="fileUpload" accept=".xlsx,.xls,.csv" hidden>
+      </div>
+      <span id="uploadStatus" class="upload-status">Base incorporada</span>
+
+      <div class="method-chip">Índice relativo 0–100 · não é volume absoluto</div>
+    </section>
+
+    <section class="upload-help">
+      <div>
+        <strong>Atualização rápida:</strong>
+        carregue uma planilha com as colunas <code>data</code>, <code>mercado_codigo</code>, <code>mercado</code> e <code>indice_trends</code>.
+        Também aceito a aba <code>serie_mensal</code> da planilha-base que preparei.
+      </div>
+      <button id="showFormatHelp" class="link-btn">Ver formato aceito</button>
+    </section>
+
+    <section id="formatHelp" class="format-help hidden">
+      <h3>Formato mínimo da planilha</h3>
+      <div class="format-grid">
+        <div><code>data</code><span>Ex.: 2026-08-01</span></div>
+        <div><code>mercado_codigo</code><span>Ex.: BR, AR, CL</span></div>
+        <div><code>mercado</code><span>Ex.: Brasil</span></div>
+        <div><code>indice_trends</code><span>Valor de 0 a 100</span></div>
+      </div>
+      <p>Se houver colunas <code>ano</code>, <code>mes_num</code>, <code>mes</code> e <code>termo_google_trends</code>, elas também serão aproveitadas. Em arquivos XLSX, o dashboard procura primeiro uma aba chamada <code>serie_mensal</code>; se não existir, usa a primeira aba.</p>
+    </section>
+
+    <section class="kpis">
+      <article class="kpi"><span>Interesse médio</span><strong id="kpiAvg">—</strong><small id="kpiAvgSub">—</small></article>
+      <article class="kpi"><span>Variação vs. ano anterior</span><strong id="kpiYoy">—</strong><small id="kpiYoySub">—</small></article>
+      <article class="kpi"><span>Momentum recente</span><strong id="kpiMomentum">—</strong><small>3 meses mais recentes vs. 3 anteriores</small></article>
+      <article class="kpi"><span>Pico do período</span><strong id="kpiPeak">—</strong><small id="kpiPeakSub">—</small></article>
+      <article class="kpi"><span>Volatilidade</span><strong id="kpiVol">—</strong><small>Coeficiente de variação</small></article>
+    </section>
+
+    <section class="card card-wide">
+      <div class="card-head trend-head">
+        <div>
+          <span class="section-tag">TENDÊNCIA</span>
+          <h2>Interesse ao longo do tempo</h2>
+          <p>Este é o único gráfico com filtro próprio de data.</p>
+        </div>
+        <div class="date-filters">
+          <div><label for="startDate">De</label><input type="month" id="startDate"></div>
+          <div><label for="endDate">Até</label><input type="month" id="endDate"></div>
+          <button id="clearDates" class="mini-btn">Todo período</button>
+        </div>
+      </div>
+      <div class="chart-wrap large"><canvas id="trendChart"></canvas></div>
+    </section>
+
+    <section class="grid-2">
+      <article class="card">
+        <div class="card-head"><div><span class="section-tag">COMPARATIVO</span><h2 id="comparisonTitle">Ano selecionado × anterior</h2><p>Compara mês a mês no mesmo mercado.</p></div></div>
+        <div class="chart-wrap"><canvas id="comparisonChart"></canvas></div>
+      </article>
+
+      <article class="card">
+        <div class="card-head"><div><span class="section-tag">SAZONALIDADE</span><h2>Perfil sazonal</h2><p>Índice do mês em relação à média histórica do mercado.</p></div></div>
+        <div class="seasonality" id="seasonalityGrid"></div>
+        <div class="legend"><span>abaixo do normal</span><div class="gradient"></div><span>acima do normal</span></div>
+      </article>
+    </section>
+
+    <section class="grid-2">
+      <article class="card">
+        <div class="card-head"><div><span class="section-tag">MERCADOS</span><h2>Ranking de interesse</h2><p>Média do ano selecionado.</p></div></div>
+        <div class="chart-wrap"><canvas id="rankingChart"></canvas></div>
+      </article>
+
+      <article class="card">
+        <div class="card-head"><div><span class="section-tag">CRESCIMENTO</span><h2>Variação anual por mercado</h2><p>Ano selecionado contra o anterior, usando meses comparáveis.</p></div></div>
+        <div class="chart-wrap"><canvas id="yoyChart"></canvas></div>
+      </article>
+    </section>
+
+    <section class="grid-2">
+      <article class="card">
+        <div class="card-head"><div><span class="section-tag">MOMENTUM</span><h2>Quem está acelerando agora?</h2><p>Últimos 3 meses disponíveis contra os 3 anteriores.</p></div></div>
+        <div class="chart-wrap"><canvas id="momentumChart"></canvas></div>
+      </article>
+
+      <article class="card">
+        <div class="card-head"><div><span class="section-tag">ESTABILIDADE</span><h2>Volatilidade do interesse</h2><p>Quanto maior o índice, mais oscilante é a série.</p></div></div>
+        <div class="chart-wrap"><canvas id="volatilityChart"></canvas></div>
+      </article>
+    </section>
+
+    <section class="grid-2">
+      <article class="card">
+        <div class="card-head"><div><span class="section-tag">PICOS</span><h2>Maiores picos do período</h2><p>Útil para investigar férias, campanhas, eventos e notícias.</p></div></div>
+        <div class="peaks" id="peaksTable"></div>
+      </article>
+
+      <article class="card">
+        <div class="card-head"><div><span class="section-tag">GEOGRAFIA</span><h2>Interesse relativo por país</h2><p>Recorte geográfico disponível para 2026.</p></div></div>
+        <div class="chart-wrap"><canvas id="geoChart"></canvas></div>
+      </article>
+    </section>
+
+
+    <section class="methodology-card">
+      <div class="methodology-intro">
+        <span class="section-tag">METODOLOGIA</span>
+        <h2>Como esta análise foi construída</h2>
+        <p>O dashboard usa dados do Google Trends para acompanhar o interesse relativo pelo atrativo associado ao Bondinho do Pão de Açúcar em diferentes mercados. A leitura deve ser feita como um indicador de comportamento de busca — e não como quantidade absoluta de pesquisas ou de visitantes.</p>
+      </div>
+
+      <div class="methodology-grid">
+        <article class="method-box">
+          <div class="method-number">01</div>
+          <h3>Por que “Pão de Açúcar”?</h3>
+          <p>A análise foi construída a partir do <strong>tema “Pão de Açúcar”</strong> no Google Trends. A escolha busca representar o atrativo de forma mais abrangente do que a palavra “Bondinho”, já que internacionalmente o destino tende a ser reconhecido pelo nome do próprio Pão de Açúcar e por suas traduções locais.</p>
+          <p>Assim, o objetivo não é medir apenas quem digita literalmente “Bondinho”, mas captar o interesse digital relacionado ao conceito do atrativo.</p>
+        </article>
+
+        <article class="method-box">
+          <div class="method-number">02</div>
+          <h3>Tema × termo de pesquisa</h3>
+          <p>No Google Trends, um <strong>termo de pesquisa</strong> representa a expressão digitada pelo usuário. Já um <strong>tema</strong> reúne diferentes termos que correspondem ao mesmo conceito, inclusive em outros idiomas.</p>
+          <div class="method-example">
+            <span>Exemplo conceitual</span>
+            <strong>Pão de Açúcar</strong>
+            <div class="method-tags">
+              <span>“Pão de Açúcar”</span>
+              <span>“Sugarloaf Mountain”</span>
+              <span>“Pan de Azúcar”</span>
+              <span>“Pain de Sucre”</span>
+            </div>
+          </div>
+          <p class="method-caution">Os exemplos acima ilustram a lógica de um tema; a composição exata utilizada pelo Google não é disponibilizada como uma lista fechada de expressões.</p>
+        </article>
+
+        <article class="method-box">
+          <div class="method-number">03</div>
+          <h3>Como funciona o índice 0–100?</h3>
+          <p>Os números do Google Trends são <strong>normalizados</strong>. Cada ponto considera a participação daquele tema no conjunto de buscas realizadas na região e no período analisados. Depois, os resultados são escalonados de 0 a 100.</p>
+          <div class="scale-demo">
+            <div><b>100</b><span>maior interesse relativo da série</span></div>
+            <div><b>50</b><span>interesse relativo equivalente à metade do pico</span></div>
+            <div><b>0</b><span>volume insuficiente ou interesse muito baixo para aparecer</span></div>
+          </div>
+          <p>Por isso, <strong>100 não significa 100 buscas</strong> e um país com índice maior não necessariamente possui mais pesquisas em números absolutos.</p>
+        </article>
+
+        <article class="method-box">
+          <div class="method-number">04</div>
+          <h3>Como interpretar os resultados</h3>
+          <p>O dashboard trabalha principalmente com <strong>evolução, sazonalidade, crescimento e aceleração do interesse relativo</strong>. Os dados ajudam a identificar mudanças de comportamento e mercados com sinais de maior ou menor atenção digital ao atrativo.</p>
+          <ul class="method-list">
+            <li><strong>Interesse médio:</strong> comportamento médio no período selecionado.</li>
+            <li><strong>YoY:</strong> comparação com o mesmo período do ano anterior.</li>
+            <li><strong>Momentum:</strong> últimos três meses disponíveis contra os três anteriores.</li>
+            <li><strong>Sazonalidade:</strong> meses historicamente acima ou abaixo da média.</li>
+            <li><strong>Volatilidade:</strong> intensidade das oscilações do interesse.</li>
+          </ul>
+        </article>
+      </div>
+
+      <div class="methodology-note">
+        <strong>Importante:</strong>
+        <span>Google Trends utiliza uma amostra agregada e anonimizada das buscas. Os indicadores devem ser tratados como uma fonte de inteligência de demanda e combinados, quando possível, com PAX, vendas, origem dos visitantes e outras bases de mercado.</span>
+      </div>
+    </section>
+
+    <section class="insight-card">
+      <div>
+        <span class="section-tag">LEITURA AUTOMÁTICA</span>
+        <h2>O que os dados estão sinalizando?</h2>
+      </div>
+      <p id="autoInsight">—</p>
+    </section>
+
+    <footer>
+      <p><strong>Nota metodológica:</strong> Google Trends apresenta interesse relativo normalizado de 0 a 100. O valor 100 representa o pico de popularidade dentro da série/configuração analisada; os dados não equivalem a quantidade absoluta de buscas. Comparações entre mercados devem considerar a forma de exportação das séries.</p>
+      <p>Base atualizada em 10/08/2026 · Termo dos arquivos: “Pão de Açúcar”.</p>
+    </footer>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+  <script src="data.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
