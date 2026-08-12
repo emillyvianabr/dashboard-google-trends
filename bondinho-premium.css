@@ -47,3 +47,58 @@ footer{display:flex;justify-content:space-between;gap:18px;border-top:1px solid 
 @media(max-width:850px){.shell{width:min(94%,calc(100% - 28px))}.header-grid{grid-template-columns:1fr}.header-meta{border-left:0;border-top:2px solid var(--orange);padding:12px 0 0;min-width:0}.filter-bar{align-items:flex-start;flex-direction:column}.data-actions{width:100%;justify-content:space-between}.two-col,.comparison-grid,.diagnostic-grid{grid-template-columns:1fr}.comparison-grid .panel{min-height:auto}.comparison-grid .chart-wrap{height:320px}.section-intro{align-items:flex-start;flex-direction:column;gap:6px}.section-intro p{text-align:left}.geo-radar{grid-template-columns:repeat(3,1fr)}.chart-xl{height:340px}}
 @media(max-width:650px){.shell{width:calc(100% - 24px)}.header-grid{padding:24px 0}.title-block h1{font-size:34px}.filters-left{width:100%;flex-wrap:wrap}.field{flex:1}.field select,.field-small select{width:100%;min-width:0}.data-actions{align-items:flex-start;flex-direction:column}.data-menu-panel{left:0;right:auto;width:min(320px,88vw)}.kpi-grid{grid-template-columns:1fr 1fr}.panel-head{flex-direction:column}.date-controls{width:100%;flex-wrap:wrap}.month-field{flex:1}.month-field input{width:100%;min-width:0}.seasonality{grid-template-columns:repeat(3,1fr)}.geo-radar{grid-template-columns:1fr 1fr}.method-grid{grid-template-columns:1fr}.chart-wrap{height:275px}.chart-xl{height:310px}.chart-tall{height:330px}footer{flex-direction:column}}
 @media(max-width:430px){.kpi-grid{grid-template-columns:1fr}.geo-radar{grid-template-columns:1fr}.seasonality{grid-template-columns:repeat(2,1fr)}}
+
+/* Cristo × Bondinho — módulo comparativo */
+.attraction-compare-section{margin-top:26px}
+.attraction-compare-intro{align-items:flex-end}
+.attraction-summary-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:12px}
+.attraction-kpi{position:relative;overflow:hidden;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px 18px;min-height:106px}
+.attraction-kpi:before{content:"";position:absolute;left:0;right:0;top:0;height:2px;background:#C9CDD2}
+.attraction-kpi-orange:before{background:var(--orange)}
+.attraction-kpi-dark:before{background:#28333E}
+.attraction-kpi span{display:block;font-size:9px;line-height:1.3;color:var(--muted);font-weight:850;text-transform:uppercase;letter-spacing:.065em}
+.attraction-kpi strong{display:block;font-size:29px;letter-spacing:-.035em;margin:10px 0 4px;line-height:1;color:var(--ink)}
+.attraction-kpi small{display:block;font-size:9.5px;color:#9097A0;line-height:1.35}
+.attraction-compare-grid{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(330px,.85fr);gap:12px}
+.attraction-main-panel,.attraction-ratio-panel{min-width:0}
+.attraction-chart{height:320px}
+.attraction-insight{margin-top:12px;border:1px solid #E9E2DD;background:linear-gradient(135deg,#FFF9F5,#FFFDFC);border-radius:12px;padding:14px 16px;font-size:11px;line-height:1.6;color:#5F554F}
+.attraction-insight strong{color:var(--ink)}
+.attraction-source-note{margin:9px 2px 0;color:var(--muted);font-size:9.5px;line-height:1.5}
+.attraction-source-note strong{color:#626A73}
+@media(max-width:900px){.attraction-compare-grid{grid-template-columns:1fr}.attraction-summary-grid{grid-template-columns:1fr 1fr 1fr}}
+@media(max-width:620px){.attraction-summary-grid{grid-template-columns:1fr}.attraction-chart{height:300px}}
+
+/* Cristo × Bondinho — refinamentos: KPIs, sazonalidade e momentum */
+.attraction-summary-grid .attraction-kpi{
+  min-height:118px;padding:16px 16px 14px;border-radius:13px;
+}
+.attraction-summary-grid .attraction-kpi:before{display:none}
+.attraction-summary-grid .attraction-kpi:after{
+  content:"";position:absolute;left:16px;right:16px;top:0;height:2px;background:#C9CDD2;opacity:.95
+}
+.attraction-summary-grid .attraction-kpi-dark:after{background:#28333E}
+.attraction-summary-grid .attraction-kpi-orange:after{background:var(--orange)}
+.attraction-summary-grid .attraction-kpi .kpi-label{
+  font-size:10px;line-height:1.3;color:var(--muted);font-weight:800;text-transform:uppercase;letter-spacing:.055em
+}
+.attraction-summary-grid .attraction-kpi strong{font-size:30px;margin:10px 0 3px;letter-spacing:-.035em;line-height:1}
+.attraction-summary-grid .attraction-kpi small{font-size:10.5px;color:#9298A0;line-height:1.3}
+.attraction-analysis-grid{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(380px,.85fr);gap:12px;margin-top:12px}
+.attraction-analysis-grid .panel{min-width:0}
+.attraction-analysis-chart{height:300px}
+.attraction-season-summary{border-top:1px solid var(--line);margin-top:10px;padding-top:11px;font-size:10.5px;color:var(--muted);line-height:1.5}
+.attraction-season-summary strong{color:var(--ink)}
+.momentum-compare-kpis{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:6px 0 10px}
+.momentum-mini-card{position:relative;border:1px solid var(--line);border-radius:11px;background:#FCFCFD;padding:11px 12px 10px;overflow:hidden}
+.momentum-mini-card:before{content:"";position:absolute;left:0;right:0;top:0;height:2px;background:#28333E}
+.momentum-mini-orange:before{background:var(--orange)}
+.momentum-mini-card span{display:block;font-size:9px;color:var(--muted);font-weight:800;text-transform:uppercase;letter-spacing:.055em}
+.momentum-mini-card strong{display:block;font-size:25px;line-height:1;margin:8px 0 4px;letter-spacing:-.03em}
+.momentum-mini-card small{font-size:9.5px;color:var(--muted);font-weight:700}
+.momentum-mini-card strong.positive{color:var(--green)!important}.momentum-mini-card strong.negative{color:var(--red)!important}.momentum-mini-card strong.neutral{color:var(--ink)!important}
+.attraction-momentum-chart{height:214px}
+.momentum-verdict{margin-top:10px;border-radius:10px;background:#F7F8F9;border:1px solid var(--line);padding:11px 12px;font-size:10.5px;line-height:1.5;color:#626A73}
+.momentum-verdict strong{color:var(--ink)}
+@media(max-width:980px){.attraction-analysis-grid{grid-template-columns:1fr}}
+@media(max-width:620px){.momentum-compare-kpis{grid-template-columns:1fr}.attraction-analysis-chart{height:280px}}

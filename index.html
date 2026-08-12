@@ -222,18 +222,18 @@
       </div>
 
       <div class="attraction-summary-grid">
-        <article class="attraction-kpi attraction-kpi-dark">
-          <span>Cristo ÷ Bondinho</span>
+        <article class="kpi-card attraction-kpi attraction-kpi-dark">
+          <div class="kpi-label">Cristo ÷ Bondinho</div>
           <strong id="attractionRatio">—</strong>
           <small id="attractionRatioSub">mercado selecionado</small>
         </article>
-        <article class="attraction-kpi attraction-kpi-orange">
-          <span>Participação relativa do Cristo</span>
+        <article class="kpi-card attraction-kpi attraction-kpi-orange">
+          <div class="kpi-label">Participação relativa do Cristo</div>
           <strong id="attractionShare">—</strong>
           <small id="attractionShareSub">entre os dois atrativos</small>
         </article>
-        <article class="attraction-kpi">
-          <span>Diferença média</span>
+        <article class="kpi-card attraction-kpi">
+          <div class="kpi-label">Diferença média</div>
           <strong id="attractionGap">—</strong>
           <small id="attractionGapSub">Cristo − Pão de Açúcar</small>
         </article>
@@ -263,8 +263,46 @@
         </article>
       </div>
 
+      <div class="attraction-analysis-grid">
+        <article class="panel attraction-season-panel">
+          <div class="panel-head compact-head">
+            <div>
+              <span class="mini-label">Sazonalidade comparada</span>
+              <h3>Cristo × Bondinho ao longo do ano</h3>
+              <p>Índice de cada mês em relação à média histórica do próprio atrativo no mercado selecionado. 1,00 = mês típico.</p>
+            </div>
+          </div>
+          <div class="chart-wrap attraction-analysis-chart"><canvas id="attractionSeasonChart"></canvas></div>
+          <div class="attraction-season-summary" id="attractionSeasonSummary">—</div>
+        </article>
+
+        <article class="panel attraction-momentum-panel">
+          <div class="panel-head compact-head">
+            <div>
+              <span class="mini-label">Momentum</span>
+              <h3>Os dois estão acelerando ou desacelerando?</h3>
+              <p>Últimos 3 meses disponíveis contra os 3 anteriores, seguindo a mesma lógica do indicador principal.</p>
+            </div>
+          </div>
+          <div class="momentum-compare-kpis">
+            <div class="momentum-mini-card">
+              <span>Cristo Redentor</span>
+              <strong id="cristoMomentum">—</strong>
+              <small id="cristoMomentumStatus">—</small>
+            </div>
+            <div class="momentum-mini-card momentum-mini-orange">
+              <span>Bondinho</span>
+              <strong id="bondinhoMomentum">—</strong>
+              <small id="bondinhoMomentumStatus">—</small>
+            </div>
+          </div>
+          <div class="chart-wrap attraction-momentum-chart"><canvas id="attractionMomentumChart"></canvas></div>
+          <div class="momentum-verdict" id="attractionMomentumVerdict">—</div>
+        </article>
+      </div>
+
       <div class="attraction-insight" id="attractionCompareInsight">—</div>
-      <p class="attraction-source-note"><strong>Como ler:</strong> dentro de cada mercado, Cristo e Pão de Açúcar são diretamente comparáveis porque foram coletados juntos. Entre mercados, o gráfico usa a razão Cristo/Bondinho — e não os índices brutos — para respeitar a normalização própria de cada consulta. <span id="attractionPartialNote"></span></p>
+      <p class="attraction-source-note"><strong>Como ler:</strong> dentro de cada mercado, Cristo e Pão de Açúcar são diretamente comparáveis porque foram coletados juntos. Entre mercados, o gráfico usa a razão Cristo/Bondinho — e não os índices brutos — para respeitar a normalização própria de cada consulta. A sazonalidade é normalizada pela média histórica de cada atrativo. <span id="attractionPartialNote"></span></p>
     </section>
 
     <details class="methodology">
@@ -294,6 +332,6 @@
   <script src="data.js"></script>
   <script src="comparison-data.js"></script>
   <script src="bondinho-premium.js?v=20260810-1"></script>
-  <script src="comparison-module.js?v=20260812-1"></script>
+  <script src="comparison-module.js?v=20260812-2"></script>
 </body>
 </html>
