@@ -211,6 +211,62 @@
       </div>
     </section>
 
+
+    <section class="section-block attraction-compare-section" id="cristoBondinhoSection">
+      <div class="section-intro attraction-compare-intro">
+        <div>
+          <span class="section-kicker">Cristo × Bondinho</span>
+          <h2>Quem concentra mais interesse nas buscas?</h2>
+        </div>
+        <p>Comparação direta dos dois atrativos na mesma consulta do Google Trends. O mercado e o ano seguem os filtros do dashboard.</p>
+      </div>
+
+      <div class="attraction-summary-grid">
+        <article class="attraction-kpi attraction-kpi-dark">
+          <span>Cristo ÷ Bondinho</span>
+          <strong id="attractionRatio">—</strong>
+          <small id="attractionRatioSub">mercado selecionado</small>
+        </article>
+        <article class="attraction-kpi attraction-kpi-orange">
+          <span>Participação relativa do Cristo</span>
+          <strong id="attractionShare">—</strong>
+          <small id="attractionShareSub">entre os dois atrativos</small>
+        </article>
+        <article class="attraction-kpi">
+          <span>Diferença média</span>
+          <strong id="attractionGap">—</strong>
+          <small id="attractionGapSub">Cristo − Pão de Açúcar</small>
+        </article>
+      </div>
+
+      <div class="attraction-compare-grid">
+        <article class="panel attraction-main-panel">
+          <div class="panel-head compact-head">
+            <div>
+              <span class="mini-label">Evolução mensal</span>
+              <h3 id="attractionTrendTitle">Cristo × Bondinho</h3>
+              <p id="attractionTrendSubtitle">Os dois atrativos usam a mesma escala dentro do mercado selecionado.</p>
+            </div>
+          </div>
+          <div class="chart-wrap attraction-chart"><canvas id="attractionTrendChart"></canvas></div>
+        </article>
+
+        <article class="panel attraction-ratio-panel">
+          <div class="panel-head compact-head">
+            <div>
+              <span class="mini-label">Força relativa por mercado</span>
+              <h3>Quantas vezes o Cristo supera o Bondinho?</h3>
+              <p>A razão é usada para evitar comparar diretamente escalas 0–100 de consultas feitas separadamente.</p>
+            </div>
+          </div>
+          <div class="chart-wrap attraction-chart"><canvas id="attractionRatioChart"></canvas></div>
+        </article>
+      </div>
+
+      <div class="attraction-insight" id="attractionCompareInsight">—</div>
+      <p class="attraction-source-note"><strong>Como ler:</strong> dentro de cada mercado, Cristo e Pão de Açúcar são diretamente comparáveis porque foram coletados juntos. Entre mercados, o gráfico usa a razão Cristo/Bondinho — e não os índices brutos — para respeitar a normalização própria de cada consulta. <span id="attractionPartialNote"></span></p>
+    </section>
+
     <details class="methodology">
       <summary>
         <div><span class="section-kicker">Metodologia</span><h2>Como interpretar estes dados</h2></div>
@@ -236,6 +292,8 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
   <script src="data.js"></script>
+  <script src="comparison-data.js"></script>
   <script src="bondinho-premium.js?v=20260810-1"></script>
+  <script src="comparison-module.js?v=20260812-1"></script>
 </body>
 </html>
